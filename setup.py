@@ -4,6 +4,8 @@ setup(
     name='cooldown',
     description='A cooldown/counter class to trigger time based events in games',
     version='0.1.0',
+    author='Michael Lamertz',
+    author_email='michael.lamertz@gmail.com',
+    url='https://github.com/dickerdackel/cooldown',
     packages=find_packages(),
-    include_package_data=True,
 )
