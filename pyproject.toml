@@ -1,0 +1,37 @@
+[build-system]
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'
+
+[project]
+name = 'cooldown'
+version = '0.0.1'
+authors = [
+    { name="Michael Lamertz", email="michael.lamertz@gmail.com" },
+]
+description = 'A cooldown/counter class to trigger time based events in games'
+readme = 'README.md'
+classifiers = [
+    'License :: OSI Approved :: MIT No Attribution License (MIT-0)',
+    'Topic :: Software Development :: Libraries :: pygame',
+]
+
+[project.urls]
+'Homepage' = 'https://github.com/dickerdackel/cooldown'
+'Bug Tracker' = 'https://github.com/DickerDackel/cooldown/issues'
+
+
+#dependencies = [ ]
+
+[tool.pylint.'MESSAGES CONTROL']
+# C0103: Variable name "dy" doesn't conform to snake_case naming style (invalid-name)
+# C0114: Missing module docstring (missing-module-docstring)
+# C0116: Missing function or method docstring (missing-function-docstring)
+# C0301: Line too long (116/100) (line-too-long)
+# E128 continuation line under-indented for visual indent
+# E221 multiple spaces before operator
+# E222 multiple spaces after operator
+# E241 multiple spaces after ','
+# R0911: Too many return statements (10/6) (too-many-return-statements)
+
+disable = 'C0103,C0301,C0114,C0116,E128,E221,E222,E241,R0911'
+
