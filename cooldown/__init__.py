@@ -1,6 +1,18 @@
 import time
 
 
+class DeltaTime:
+    def __init__(self):
+        self.prev = time.time()
+
+    @property
+    def dt(self):
+        now = time.time()
+        dt = now - self.prev
+        self.prev = now
+        return dt
+
+
 class Cooldown:
     """A cooldown class, counting down to zero, optionally repeating.
 
@@ -65,16 +77,12 @@ class Cooldown:
         passed from the main game loop.
         """
 
-        prev_time = now = time.time()
+        dt = DeltaTime()
         while True:
             if self.disabled or self.temperature == 0:
                 return self.temperature
 
-            now = time.time()
-            dt = now - prev_time
-            prev_time = now
-
-            yield self(dt)
+            yield self(dt.dt)
 
     def reset(self):
         """cooldown.reset()
