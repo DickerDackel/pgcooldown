@@ -1,3 +1,6 @@
+import time
+
+
 class Cooldown:
     """A cooldown class, counting down to zero, optionally repeating.
 
@@ -35,7 +38,11 @@ class Cooldown:
     def __call__(self, dt):
         """cooldown(dt) -> float
 
-        reduces and returns the cooldown
+        reduces and returns the cooldown.
+
+        Use this, if delta time is handled by the main loop.  If you don't want
+        to calculate and take care of delta time, use the iterator versin
+        instead.
         """
         if self.disabled or self.temperature == 0:
             return self.temperature
@@ -45,6 +52,29 @@ class Cooldown:
             self.temperature = 0
 
         return self.temperature
+
+    def __iter__(self):
+        """cooldown = Cooldown(1.5)
+        while True:
+            if next(cooldown): return
+
+            # do shit...
+            cooldown.reset()
+
+        Basically the same as __call__, but time is tracked inside and not
+        passed from the main game loop.
+        """
+
+        prev_time = now = time.time()
+        while True:
+            if self.disabled or self.temperature == 0:
+                return self.temperature
+
+            now = time.time()
+            dt = now - prev_time
+            prev_time = now
+
+            yield self(dt)
 
     def reset(self):
         """cooldown.reset()
