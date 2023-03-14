@@ -2,6 +2,18 @@ import time
 
 
 class DeltaTime:
+    """A class to keep track of time between calls.
+
+        delta_time = DeltaTime()
+        print(dt.dt)
+        sleep(1)
+        print(dt.dt)
+
+    Pygame comes with its own time tracking function in pygame.time, but
+    Cooldown and DeltaTime are still useful enough for other frameworks like
+    pyglet, so we're tracking time outself.
+    """
+
     def __init__(self):
         self.prev = time.time()
 
