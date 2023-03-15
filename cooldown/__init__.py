@@ -123,6 +123,10 @@ class Cooldown:
             passed = time.time() - self.t0
             return self._temperature - passed
 
+    @temperature.setter
+    def temperature(self, val):
+        self._temperature = val
+
     @property
     def cold(self):
         """if cooldown.cold: ...
