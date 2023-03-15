@@ -26,89 +26,132 @@ class DeltaTime:
 
 
 class Cooldown:
-    """A cooldown class, counting down to zero, optionally repeating.
+    """A cooldown class, checking the delta time between start and now.
 
         cooldown = Cooldown(5)
+
+    A trigger class to wait for n seconds.
+
+    If started, it saves the current time as t0.  On every check, it compares
+    the then current time with t0 and returns as 'cold' if the cooldown time
+    has passed.
+
+    The cooldown can be paused, in which case it saves the time left.  On
+    restart, it'll set again t0 to the current time and continues to compare as
+    normal against the left cooldown time.
+
+    At any time, the cooldown can be reset to its initial or a new value.
 
     Parameters:
 
+        seconds: float - Seconds to cool down
+
+    Attributes:
+
         temperature: float - "temperature" to cool down from
         init: float - default to initialize the cooldown after each reset()
-        disabled: bool = False - to temporarily disable the cooldown
+        paused: bool = False - to temporarily disable the cooldown
+
+    Methods:
+
+        start()
+
+            set start time of cooldown to now, start comparing delta time
+
+            The cooldown is started at creation time, but can be immediately
+            paused by chaining.  See pause below.
+
+        pause()
+
+            remember time left, stop comparing delta time.  This can also be
+            used to create an cooldown that's not yet running by chaining to
+            the constructor:
+
+                cooldown = Cooldown(10).pause()
+
+
+        reset()
+        reset(new_cooldown_time)
+
+            set t0 to now, leave pause state as is, optionally set delta time
+            to new value
+
 
     Synopsis:
 
-        clock = pygame.time.Clock()
         cooldown = Cooldown(5)
 
         while True:
-            dt = clock.get_time() / 1000.0
+            do_stuff()
 
-            ...
-            cooldown(delta_time)
+            if key_pressed
+                if key == 'P':
+                    cooldown.pause()
+                elif key == 'ESC':
+                    cooldown.start()
+
             if cooldown.cold:
-                # do stuff
-                # Reset the timer to wait again
+                launch_stuff()
                 cooldown.reset()
-
-            ...
 
     """
 
-    def __init__(self, init, disabled=False):
-        self.temperature = self.init = init
-        self.disabled = False
+    def __init__(self, temperature):
+        self.init = temperature
+        self.paused = False
 
-    def __call__(self, dt):
-        """cooldown(dt) -> float
+        self.reset()
 
-        reduces and returns the cooldown.
-
-        Use this, if delta time is handled by the main loop.  If you don't want
-        to calculate and take care of delta time, use the iterator versin
-        instead.
-        """
-        if self.disabled or self.temperature == 0:
-            return self.temperature
-
-        self.temperature -= dt
-        if self.temperature < 0:
-            self.temperature = 0
-
-        return self.temperature
-
-    def __iter__(self):
-        """cooldown = Cooldown(1.5)
-        while True:
-            if next(cooldown): return
-
-            # do shit...
-            cooldown.reset()
-
-        Basically the same as __call__, but time is tracked inside and not
-        passed from the main game loop.
-        """
-
-        dt = DeltaTime()
-        while True:
-            if self.disabled or self.temperature == 0:
-                return self.temperature
-
-            yield self(dt.dt)
-
-    def reset(self):
-        """cooldown.reset()
+    def reset(self, *new):
+        """cooldown.reset(*new_temperature)
 
         reset the cooldown to its initial temperature to use it again
+
+        Optionally, provide a new initial temperature for this and future resets.
         """
-        self.temperature = self.init
+        if new: self.init = new[0]
+
+        self.t0 = time.time()
+        self._temperature = self.init
+
+
+    @property
+    def temperature(self):
+        if self.paused:
+            return self._temperature
+        else:
+            passed = time.time() - self.t0
+            return self._temperature - passed
 
     @property
     def cold(self):
         """if cooldown.cold: ...
 
-        the cooldown is cold, if it is down to zero.  From here, you can either
+        the cooldown is cold, if all its time has passed.  From here, you can either
         act on it and/or reset.
         """
+        now = time.time()
+        if self.paused:
+            return self._temperature <= 0
+        else:
+            return self.t0 + self._temperature < time.time()
 
-        return self.temperature <= 0
+    def pause(self):
+        """cooldown.pause()
+
+        Pause the cooldown.
+        """
+        self.paused = True
+        self._temperature = time.time() - self.t0
+
+        return self
+
+    def start(self):
+        """cooldown.start()
+
+        (Re-)start the cooldown.
+        """
+        self.t0 = time.time()
+        self.paused = False
+
+        return self
