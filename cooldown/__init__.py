@@ -163,6 +163,17 @@ class Cooldown:
         return self
 
 def cooldown(f):
+    """Save us from seeing the cooldown boilerplate 10 times in every GameState.
+
+    The class of the decorated method is expected to have a Cooldown instance
+    named cooldown.  That's it.
+
+    Class attributes:
+
+        self.cooldown           The current cooldown timer
+
+    """
+
     @wraps(f)
     def wrapper(self, *args, **kwargs):
         if self.cooldown.cold:
