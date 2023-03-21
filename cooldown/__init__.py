@@ -1,5 +1,7 @@
 import time
 
+from functools import wraps
+
 
 class DeltaTime:
     """A class to keep track of time between calls.
@@ -159,3 +161,12 @@ class Cooldown:
         self.paused = False
 
         return self
+
+def cooldown(f):
+    @wraps(f)
+    def wrapper(self, *args, **kwargs):
+        if self.cooldown.cold:
+            self.cooldown.reset()
+            return f(self, *args, **kwargs)
+        return self.cooldown.temperature
+    return wrapper
