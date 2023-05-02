@@ -105,12 +105,11 @@ class Cooldown:
         self.reset()
 
     def reset(self, *new):
-        """cooldown.reset(*new_temperature)
+        """reset the cooldown, optionally pass a new temperature
 
-        reset the cooldown to its initial temperature to use it again
+            cooldown.reset(new_temp) -> self
 
-        Optionally, provide a new initial temperature for this and future
-        resets.
+        Can be chained.
         """
         if new: self.init = new[0]
 
@@ -132,10 +131,15 @@ class Cooldown:
 
     @property
     def cold(self):
-        """if cooldown.cold: ...
+        """the state of the cooldown
+
+            if cooldown.cold:
+                ...
 
         the cooldown is cold, if all its time has passed.  From here, you can
         either act on it and/or reset.
+
+        Note that this will return the time left in the cooldown, if it is paused.
         """
         if self.paused:
             return self._temperature <= 0
@@ -143,9 +147,10 @@ class Cooldown:
             return self.t0 + self._temperature < time.time()
 
     def pause(self):
-        """cooldown.pause()
+        """pause the cooling down
 
-        Pause the cooldown.
+            cooldown.pause()
+
         """
         self.paused = True
         self._temperature = time.time() - self.t0
@@ -153,9 +158,9 @@ class Cooldown:
         return self
 
     def start(self):
-        """cooldown.start()
+        """(re-)start the cooldown after a pause.
 
-        (Re-)start the cooldown.
+            cooldown.start()
         """
         self.t0 = time.time()
         self.paused = False
