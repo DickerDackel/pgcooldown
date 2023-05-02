@@ -109,13 +109,14 @@ class Cooldown:
 
         reset the cooldown to its initial temperature to use it again
 
-        Optionally, provide a new initial temperature for this and future resets.
+        Optionally, provide a new initial temperature for this and future
+        resets.
         """
         if new: self.init = new[0]
 
         self.t0 = time.time()
         self._temperature = self.init
-
+        self.paused = False
 
     @property
     def temperature(self):
@@ -133,10 +134,9 @@ class Cooldown:
     def cold(self):
         """if cooldown.cold: ...
 
-        the cooldown is cold, if all its time has passed.  From here, you can either
-        act on it and/or reset.
+        the cooldown is cold, if all its time has passed.  From here, you can
+        either act on it and/or reset.
         """
-        now = time.time()
         if self.paused:
             return self._temperature <= 0
         else:
@@ -161,6 +161,7 @@ class Cooldown:
         self.paused = False
 
         return self
+
 
 def cooldown(f):
     """Save us from seeing the cooldown boilerplate 10 times in every GameState.
