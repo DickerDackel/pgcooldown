@@ -117,8 +117,14 @@ class Cooldown:
         self._temperature = self.init
         self.paused = False
 
+        return self
+
     @property
     def temperature(self):
+        """the temperature of the cooldown object
+
+            time_left = cooldown.temperature
+        """
         if self.paused:
             return self._temperature
         else:
