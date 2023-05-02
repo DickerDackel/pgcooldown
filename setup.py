@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name='cooldown',
     description='A cooldown/counter class to trigger time based events in games',
-    version='0.1.6',
+    version='0.1.7',
     author='Michael Lamertz',
     author_email='michael.lamertz@gmail.com',
     url='https://github.com/dickerdackel/cooldown',
