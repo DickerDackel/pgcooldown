@@ -31,8 +31,13 @@ class Cooldown:
     """A cooldown class, checking the delta time between start and now.
 
         cooldown = Cooldown(5)
+        cooldown = Cooldown(5, start=1)
 
     A trigger class to wait for n seconds.
+
+    The optional 'start' parameter gives an initial start time, so a Cooldown
+    with 5 seconds can be created, that is already cold or has only 1 frame
+    left.
 
     If started, it saves the current time as t0.  On every check, it compares
     the then current time with t0 and returns as 'cold' if the cooldown time
@@ -98,20 +103,25 @@ class Cooldown:
 
     """
 
-    def __init__(self, temperature):
+    def __init__(self, temperature, start=None):
         self.init = temperature
         self.paused = False
 
+        if start:
+            self._temperature = start
+
         self.reset()
 
-    def reset(self, *new):
+    def reset(self, new=None):
         """reset the cooldown, optionally pass a new temperature
 
             cooldown.reset(new_temp) -> self
 
         Can be chained.
         """
-        if new: self.init = new[0]
+
+        if new:
+            self.init = new[0]
 
         self.t0 = time.time()
         self._temperature = self.init
