@@ -121,7 +121,7 @@ class Cooldown:
         """
 
         if new:
-            self.init = new[0]
+            self.init = new
 
         self.t0 = time.time()
         self._temperature = self.init
