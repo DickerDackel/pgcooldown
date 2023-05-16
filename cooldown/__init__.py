@@ -169,7 +169,7 @@ class Cooldown:
 
         """
         self.paused = True
-        self._temperature = time.time() - self.t0
+        self._temperature -= time.time() - self.t0
 
         return self
 
