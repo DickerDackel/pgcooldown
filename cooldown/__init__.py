@@ -25,8 +25,8 @@ class Cooldown:
     Attributes:
 
         remaining: float        - "temperature" to cool down from
-        [temperature:           - aliased to remaining for backward compatibility]
         duration: float         - default to initialize the cooldown after each reset()
+        normalized: float       - property that maps remaining into an interval between 0 and 1
         paused: bool = False    - to temporarily disable the cooldown
         hot: bool               - there is stil time remaining before cooldown
         cold: bool              - time of the cooldown has run out
