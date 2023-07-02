@@ -33,9 +33,15 @@ class Cooldown:
 
     Methods:
 
+        reset()
+        reset(new_cooldown_time)
+
+            set t0 to now, remove pause state, optionally set duration to new
+            value
+
         start()
 
-            set start time of cooldown to now, start comparing delta time
+            Start the cooldown again after a pause.
 
             The cooldown is started at creation time, but can be immediately
             paused by chaining.  See pause below.
@@ -47,13 +53,6 @@ class Cooldown:
             the constructor:
 
                 cooldown = Cooldown(10).pause()
-
-
-        reset()
-        reset(new_cooldown_time)
-
-            set t0 to now, remove pause state, optionally set delta time to new
-            value
 
 
     Synopsis:
@@ -74,13 +73,11 @@ class Cooldown:
                 cooldown.reset()
 
     """
-    def __init__(self, duration, start=None):
+    def __init__(self, duration):
         self.duration = duration
         self.t0 = time.time()
         self.paused = False
-
-        if start:
-            self._remaining = self.duration - start 
+        self._remaining = 0
 
     def reset(self, new=None):
         """reset the cooldown, optionally pass a new temperature
@@ -106,6 +103,11 @@ class Cooldown:
         either act on it and/or reset.
         """
         return self.remaining <= 0
+
+    @cold.setter
+    def cold(self, state):
+        if state:
+            self.t0 = time.time() - self.duration
 
     @property
     def hot(self):
@@ -137,11 +139,19 @@ class Cooldown:
             return remaining if remaining >= 0 else 0
 
     @remaining.setter
-    def remaining(self, t):
+    def remaining(self, t=0):
         if self.paused:
-            self._remaining = t
-        if not self.paused:
-            self.t0 = time.time() - (self.duration - t)
+            if t:
+                self._remaining = t
+        else:
+            if t > self.duration:
+                raise ValueError('Cannot set remaining time greater than duration.  Use reset() instead')
+
+            self.t0 = time.time() - self.duration + self._remaining
+
+    @property
+    def normalized(self):
+        return 1 - self.remaining / self.duration
 
     def pause(self):
         """pause the cooling down
@@ -166,5 +176,6 @@ class Cooldown:
 
         self.paused = False
         self.remaining = self._remaining
+        self._remaining = 0
 
         return self
