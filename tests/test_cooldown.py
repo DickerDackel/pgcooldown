@@ -10,6 +10,12 @@ def test_init():
     assert c.paused is False
     assert c.remaining >= 0
 
+    c = Cooldown(1, cold=True)
+    assert c.duration == 1
+    assert c.remaining == 0
+    assert c.cold
+    assert not c.hot
+
 
 def test_reset():
     c = Cooldown(1)

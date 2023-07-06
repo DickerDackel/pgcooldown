@@ -73,11 +73,12 @@ class Cooldown:
                 cooldown.reset()
 
     """
-    def __init__(self, duration):
+    def __init__(self, duration, cold=False):
         self.duration = duration
         self.t0 = time.time()
         self.paused = False
         self._remaining = 0
+        self.cold = cold
 
     def reset(self, new=None):
         """reset the cooldown, optionally pass a new temperature
