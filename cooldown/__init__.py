@@ -139,6 +139,8 @@ class Cooldown:
             remaining = self.duration - (time.time() - self.t0)
             return remaining if remaining >= 0 else 0
 
+    temperature = remaining
+
     @remaining.setter
     def remaining(self, t=0):
         if self.paused:
