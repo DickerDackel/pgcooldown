@@ -1,36 +1,76 @@
 # cooldown
 
-A cooldown class, counting down to zero, optionally repeating.
+A cooldown class, checking the delta time between start and now.
 
     cooldown = Cooldown(5)
+
+A trigger class to wait for n seconds.
+
+If started, it saves the current time as t0.  On every check, it compares
+the then current time with t0 and returns as 'cold' if the cooldown time
+has passed.
+
+The cooldown can be paused, in which case it saves the time left.  On
+restart, it'll set again t0 to the remaining time and continues to compare
+as normal against the left cooldown time.
+
+At any time, the cooldown can be reset to its initial or a new value.
 
 Parameters:
 
-    temperature: float - "temperature" to cool down from
-    init: float - default to initialize the cooldown after each reset()
-    disabled: bool = False - to temporarily disable the cooldown
+    duration: float - Seconds to cool down
 
-## Synopsis:
+Attributes:
 
-    clock = pygame.time.Clock()
+    remaining: float        - "temperature" to cool down from
+    duration: float         - default to initialize the cooldown after each reset()
+    normalized: float       - property that maps remaining into an interval between 0 and 1
+    paused: bool = False    - to temporarily disable the cooldown
+    hot: bool               - there is stil time remaining before cooldown
+    cold: bool              - time of the cooldown has run out
+
+Methods:
+
+    reset()
+    reset(new_cooldown_time)
+
+	set t0 to now, remove pause state, optionally set duration to new
+	value
+
+    start()
+
+	Start the cooldown again after a pause.
+
+	The cooldown is started at creation time, but can be immediately
+	paused by chaining.  See pause below.
+
+    pause()
+
+	remember time left, stop comparing delta time.  This can also be
+	used to create an cooldown that's not yet running by chaining to
+	the constructor:
+
+	    cooldown = Cooldown(10).pause()
+
+
+Synopsis:
+
     cooldown = Cooldown(5)
 
     while True:
-	dt = clock.get_time() / 1000.0
+	do_stuff()
 
-	...
-	cooldown(delta_time)
+	if key_pressed
+	    if key == 'P':
+		cooldown.pause()
+	    elif key == 'ESC':
+		cooldown.start()
+
 	if cooldown.cold:
-	    # do stuff
-	    # Reset the timer to wait again
+	    launch_stuff()
 	    cooldown.reset()
 
-	...
-
-The dt that's usually calculated at the beginning of a pygame main loop will be
-used as a factor while counting down.
-
-See e.g. my pygame-teletype package for an example of how it is used.
+"""
 
 ## Licensing stuff
 
