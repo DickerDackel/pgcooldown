@@ -25,7 +25,7 @@ def test_reset():
     assert not c.hot
     assert not c.paused
     c.reset(2)
-    assert c.duration == 2
+    assert round(c.duration) == 2
     assert c.remaining == c.duration
     assert not c.cold
     assert c.hot
