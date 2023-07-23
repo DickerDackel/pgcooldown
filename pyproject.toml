@@ -1,7 +1,7 @@
 [project]
 name = "cooldown"
 description = "A cooldown/counter class to trigger time based events in games"
-version = "0.1.15"
+version = "0.2.0"
 readme = "README.md"
 
 authors = [
@@ -27,7 +27,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
-addopts = "-rA -s"
+addopts = "-rA -s --cov-report term-missing -s --cov=cooldown"
 testpaths = [
     "tests",
 ]
