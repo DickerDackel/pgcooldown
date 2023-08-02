@@ -1,6 +1,6 @@
 [project]
-name = "cooldown"
-description = "A cooldown/counter class to trigger time based events in games"
+name = "pgcooldown"
+description = "A cooldown/counter class to wait for stuff in games"
 version = "0.2.0"
 readme = "README.md"
 
@@ -19,15 +19,15 @@ classifiers = [
 dependencies = [ ]
 
 [project-urls]
-homepage = "https://github.com/dickerdackel/cooldown"
-bugtracker = "https://github.com/DickerDackel/cooldown/issues"
+homepage = "https://github.com/dickerdackel/pgcooldown"
+bugtracker = "https://github.com/DickerDackel/pgcooldown/issues"
 
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [tool.pytest.ini_options]
-addopts = "-rA -s --cov-report term-missing -s --cov=cooldown"
+addopts = "-rA -s --cov-report term-missing -s --cov=pgcooldown"
 testpaths = [
     "tests",
 ]

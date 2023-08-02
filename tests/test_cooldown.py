@@ -1,6 +1,6 @@
 import pytest
 
-from cooldown import Cooldown
+from pgcooldown import Cooldown
 from time import sleep, time
 
 
