@@ -1,4 +1,4 @@
-# cooldown
+# pgcooldown
 
 A cooldown class, checking the delta time between start and now.
 
