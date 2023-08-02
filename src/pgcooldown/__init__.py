@@ -2,60 +2,7 @@ import time
 
 
 class Cooldown:
-    """A cooldown class, checking the delta time between start and now.
-
-        cooldown = Cooldown(5)
-
-    A trigger class to wait for n seconds.
-
-    If started, it saves the current time as t0.  On every check, it compares
-    the then current time with t0 and returns as 'cold' if the cooldown time
-    has passed.
-
-    The cooldown can be paused, in which case it saves the time left.  On
-    restart, it'll set again t0 to the remaining time and continues to compare
-    as normal against the left cooldown time.
-
-    At any time, the cooldown can be reset to its initial or a new value.
-
-    Parameters:
-
-        duration: float - Seconds to cool down
-
-    Attributes:
-
-        remaining: float        - "temperature" to cool down from
-        duration: float         - default to initialize the cooldown after each reset()
-        normalized: float       - property that maps remaining into an interval between 0 and 1
-        paused: bool = False    - to temporarily disable the cooldown
-        hot: bool               - there is stil time remaining before cooldown
-        cold: bool              - time of the cooldown has run out
-
-    Methods:
-
-        reset()
-        reset(new_cooldown_time)
-
-            set t0 to now, remove pause state, optionally set duration to new
-            value
-
-        start()
-
-            Start the cooldown again after a pause.
-
-            The cooldown is started at creation time, but can be immediately
-            paused by chaining.  See pause below.
-
-        pause()
-
-            remember time left, stop comparing delta time.  This can also be
-            used to create an cooldown that's not yet running by chaining to
-            the constructor:
-
-                cooldown = Cooldown(10).pause()
-
-
-    Synopsis:
+    """A cooldown/counter class to wait for stuff in games.
 
         cooldown = Cooldown(5)
 
@@ -72,6 +19,49 @@ class Cooldown:
                 launch_stuff()
                 cooldown.reset()
 
+    This can be used to time sprite animation frame changes, weapon cooldown in
+    shmups, all sorts of events when programming a game.
+
+    Once instantiated, it saves the current time as t0.  On every check, it
+    compares the then current time with t0 and returns as 'cold' if the
+    cooldown time has passed.
+
+    The cooldown can be paused, in which case it saves the time left.  On
+    restart, it'll set again t0 to the remaining time and continues to compare
+    as normal against the left cooldown time.
+
+    At any time, the cooldown can be reset to its initial or a new value.
+
+    Parameters
+    ----------
+    duration: float
+        Time to cooldown in seconds
+
+    cold: bool = False
+        Start the cooldown already cold, e.g. for initial events.
+
+    Attributes
+    ----------
+    remaining: float
+        remaining "temperature" to cool down from
+
+    duration: float
+        When calling `reset`, the cooldown is set to this value.
+        Can be modified directly or by calling `cooldown.reset(duration)`
+
+    normalized: float
+        Give the remaining time as fraction between 0 and 1.
+
+    paused: bool
+        to check if the cooldown is paused.
+
+    cold: bool
+        Has the time of the cooldown run out?
+
+    hot: bool
+        Is there stil time remaining before cooldown?  This is just for
+        convenience to not write `cooldown not cold` all over the place.
+
     """
     def __init__(self, duration, cold=False):
         self.duration = duration
@@ -80,28 +70,42 @@ class Cooldown:
         self._remaining = 0
         self.cold = cold
 
-    def reset(self, new=None):
-        """reset the cooldown, optionally pass a new temperature
+    def reset(self, new=0):
+        """reset the cooldown, optionally pass a new temperature.
 
-            cooldown.reset(new_temp) -> self
+            cooldown.reset()
+            cooldown.reset(new_temp)
 
-        Can be chained.
+        Parameters
+        ----------
+        new: float = 0
+            If not 0, set a new timeout value for the cooldown
+
+        Returns
+        -------
+        None
+
         """
         if new:
             self.duration = new
         self.t0 = time.time()
         self.paused = False
-        return self
 
     @property
     def cold(self):
-        """the state of the cooldown
+        """Current state of the cooldown.
 
-            if cooldown.cold:
-                ...
-
-        the cooldown is cold, if all its time has passed.  From here, you can
+        The cooldown is cold, if all its time has passed.  From here, you can
         either act on it and/or reset.
+
+        Can be set to true to immediately set the timer to zero.  `duration`
+        after reset is not impacted by this.
+
+        Returns
+        -------
+        bool
+            True if cold
+
         """
         return self.remaining <= 0
 
@@ -112,34 +116,33 @@ class Cooldown:
 
     @property
     def hot(self):
-        """the state of the cooldown
-
-            if cooldown.hot:
-                return
-
-        the cooldown is hot, when there is still time remaining.  Use this to
-        bail out, if you are waiting for a cooldown.
-        """
+        """`not cooldown.cold` (See above)"""
         return not self.cold
 
     @property
     def remaining(self):
-        """the remaining time before cooldown.  This is also aliased to
-        "temperature"
+        """Time remaining until cold.
+
+        This property is also aliased to "temperature".
 
             time_left = cooldown.remaining
             time_left = cooldown.temperature
 
         Assigning to this value will change the current stateof the cooldown
         accordingly.
+
+        Raises
+        ------
+        ValueError
+            Setting it to a value greater than the current `duration` will
+            raise raise an exception.  Use `reset(new_duration) instead.
+
         """
         if self.paused:
             return self._remaining
         else:
             remaining = self.duration - (time.time() - self.t0)
             return remaining if remaining >= 0 else 0
-
-    temperature = remaining
 
     @remaining.setter
     def remaining(self, t=0):
@@ -152,18 +155,25 @@ class Cooldown:
 
             self.t0 = time.time() - self.duration + self._remaining
 
+    temperature = remaining
+
     @property
     def normalized(self):
+        """Return the time left as fraction between 0 and 1.
+
+        Use this as `t` for lerping or easing.
+
+        """
         return 1 - self.remaining / self.duration
 
     def pause(self):
-        """pause the cooling down
-
-            cooldown.pause()
+        """Pause the cooldown.
 
         This function can be chained to directly pause from the constructor:
 
-            cd = Cooldown(60).pause()
+            cooldown.pause()
+            cooldown = Cooldown(60).pause()
+
         """
         self._remaining = self.remaining
         self.paused = True
@@ -171,10 +181,7 @@ class Cooldown:
         return self
 
     def start(self):
-        """(re-)start the cooldown after a pause.
-
-            cooldown.start()
-        """
+        """Restart a paused cooldown."""
         if not self.paused: return self
 
         self.paused = False
