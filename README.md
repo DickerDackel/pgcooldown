@@ -72,6 +72,20 @@ Synopsis:
 
 """
 
+## Installation
+
+The project home is https://github.com/dickerdackel/pgcooldown
+
+### Getting it from pypi
+
+```
+pip install pgcooldown
+```
+
+### Tarball from github
+
+Found at https://github.com/dickerdackel/pgcooldown/releases
+
 ## Licensing stuff
 
 This lib is under the MIT license.
