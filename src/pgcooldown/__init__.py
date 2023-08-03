@@ -182,7 +182,7 @@ class Cooldown:
             if t > self.duration:
                 raise ValueError('Cannot set remaining time greater than duration.  Use reset() instead')
 
-            self.t0 = time.time() - self.duration + self._remaining
+            self.t0 = time.time() - self.duration + t
 
     temperature = remaining
 
