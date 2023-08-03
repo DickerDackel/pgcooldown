@@ -1,3 +1,8 @@
+# v0.2.3
+
+- Fixed b0rken Cooldown.remaining setter
+- Tracking changes now
+
 # v0.2.2
 
 - *bump* current dev branch

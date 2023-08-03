@@ -50,6 +50,10 @@ def test_remaining():
     assert c.cold
     assert not c.hot
     assert c.remaining == 0
+    c.reset(3)
+    sleep(2)
+    c.remaining = 2
+    assert round(c.remaining) == 2
 
 
 def test_pause():
