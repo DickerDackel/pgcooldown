@@ -75,7 +75,6 @@ def test_pause():
     assert round(c.remaining) == 4
 
 
-
 def test_cold():
     c = Cooldown(1)
     c.cold = True
@@ -98,6 +97,26 @@ def test_normalized():
     sleep(1)
     assert round(c.normalized * 100) == 100
     assert c.cold
+
+
+def test_copyconstructor():
+    c = Cooldown(10).pause()
+    d = Cooldown(c)
+    assert d.duration == 10
+    assert d.paused is False
+
+
+def test_compare():
+    c = Cooldown(10).pause()
+    assert c == 10
+    assert c > 5
+    assert c >= 10
+    assert c < 15
+    assert c <= 10
+    assert c != 5
+    assert bool(c)
+    assert int(c) == 10
+    assert float(c) == 10.0
 
 
 if __name__ == '__main__':

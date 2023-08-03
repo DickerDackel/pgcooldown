@@ -35,6 +35,12 @@ class Cooldown:
     A cooldown can be compared to int/float/bool, in which case the `remaining`
     property is used.
 
+    Cooldown provides a "copy constructor", meaning you can initialize a new
+    cooldown with an existing one.  In contrast to the compare operations,
+    which work on the time remaining, this uses the `duration` attribute.
+
+    Note, that only the duration is used.  The pause state is *not*.
+
     In case you want to initialize one `Cooldown` with another, the `duration`
     attribute is used.
 
