@@ -32,9 +32,15 @@ class Cooldown:
 
     At any time, the cooldown can be reset to its initial or a new value.
 
+    A cooldown can be compared to int/float/bool, in which case the `remaining`
+    property is used.
+
+    In case you want to initialize one `Cooldown` with another, the `duration`
+    attribute is used.
+
     Parameters
     ----------
-    duration: float
+    duration: float | pgcooldown.Cooldown
         Time to cooldown in seconds
 
     cold: bool = False
@@ -64,11 +70,25 @@ class Cooldown:
 
     """
     def __init__(self, duration, cold=False):
-        self.duration = duration
+        if isinstance(duration, Cooldown):
+            self.duration = duration.duration
+        else:
+            self.duration = float(duration)
         self.t0 = time.time()
         self.paused = False
         self._remaining = 0
         self.cold = cold
+
+    def __hash__(self): id(self)  # noqa: E704
+    def __bool__(self): return self.hot  # noqa: E704
+    def __int__(self): return int(self.temperature)  # noqa: E704
+    def __float__(self): return float(self.temperature)  # noqa: E704
+    def __lt__(self, other): return float(self) < other  # noqa: E704
+    def __le__(self, other): return float(self) <= other  # noqa: E704
+    def __eq__(self, other): return float(self) == other  # noqa: E704
+    def __ne__(self, other): return float(self) != other  # noqa: E704
+    def __gt__(self, other): return float(self) > other  # noqa: E704
+    def __ge__(self, other): return float(self) >= other  # noqa: E704
 
     def reset(self, new=0):
         """reset the cooldown, optionally pass a new temperature.
