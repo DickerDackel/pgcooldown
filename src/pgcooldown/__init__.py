@@ -83,13 +83,16 @@ class Cooldown:
 
         Returns
         -------
-        None
+        self
+            Can be e.g. chained with `pause()`
 
         """
         if new:
             self.duration = new
         self.t0 = time.time()
         self.paused = False
+
+        return self
 
     @property
     def cold(self):
@@ -174,7 +177,13 @@ class Cooldown:
             cooldown.pause()
             cooldown = Cooldown(60).pause()
 
+        Returns
+        -------
+        self
+            For chaining.
+
         """
+
         self._remaining = self.remaining
         self.paused = True
 
