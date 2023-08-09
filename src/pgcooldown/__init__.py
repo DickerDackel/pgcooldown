@@ -1,5 +1,7 @@
 import time
 
+from dataclasses import dataclass, InitVar
+
 
 class Cooldown:
     """A cooldown/counter class to wait for stuff in games.
@@ -21,6 +23,10 @@ class Cooldown:
 
     This can be used to time sprite animation frame changes, weapon cooldown in
     shmups, all sorts of events when programming a game.
+
+    If you want to use the cooldown more as a timing gauge, e.g. to modify
+    acceleration of a sprite over time, have a look at the `LerpThing` class
+    below, which makes this incredibly easy.
 
     Once instantiated, it saves the current time as t0.  On every check, it
     compares the then current time with t0 and returns as 'cold' if the
@@ -259,3 +265,74 @@ class Cooldown:
         self._remaining = 0
 
         return self
+
+
+@dataclass
+class LerpThing:
+    """A time based generic gauge that lerps between 2 points.
+
+    This class can be used for scaling, color shifts, momentum, ...
+
+    It gets initialized with 2 Values for t0 and t1, and a time `interval`,
+    then it lerps between these values.
+
+    Once the time runs out, the lerp can stop, repeat from start or bounce back
+    and forth.
+
+    An optional easing function can be put on top of `t`.
+
+    Parameters
+    ----------
+    vt0,
+    vt1: [int | float]
+        Values at t == 0 and t == 1
+
+    interval: Cooldown The length of the lerp.  This length of the interval is
+    mapped onto the range 0 - 1 as `t`.
+
+    ease: callable = lambda x: x
+        An optional easing function to put over t
+
+    repeat: int = 0
+        After the interval has finished, how to proceed?
+
+            0: Don't repeat, just stop transmogrifying
+            1: Reset and repeat from start
+            2: Bounce back and forth.  Note, that bounce back is implemented by
+               swapping vt0 and vt1.
+
+    Attributes
+    ----------
+    v: float
+        The lerped value.  This is a property which dynamically lerps the
+        value.
+
+    """
+    vt0: float
+    vt1: float
+    interval: InitVar[Cooldown | float]
+    ease: callable = lambda x: x
+    repeat: int = 0
+
+    def __post_init__(self, interval):
+        self.interval = interval if isinstance(interval, Cooldown) else Cooldown(interval)
+
+    def __call__(self):
+        return self.v
+
+    @property
+    def v(self):
+        """Get the current value of the LerpThing."""
+
+        lerp = lambda a, b, t: t * (b - a) + a
+
+        if self.interval.cold and self.repeat:
+            if self.repeat == 2:
+                self.vt0, self.vt1 = self.vt1, self.vt0
+            self.interval.reset(wrap=True)
+
+        if self.interval.hot:
+            t = self.interval.normalized
+            return lerp(self.vt0, self.vt1, self.ease(t))
+
+        return self.vt1
