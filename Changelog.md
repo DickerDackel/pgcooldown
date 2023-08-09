@@ -1,3 +1,8 @@
+# v0.2.4
+- Added LerpThing
+- reset(wrap=True), remaining vs. temperature
+- Fixed b0rken Cooldown.remaining setter
+
 # v0.2.3
 
 - Fixed b0rken Cooldown.remaining setter
