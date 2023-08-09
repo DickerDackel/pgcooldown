@@ -96,16 +96,30 @@ class Cooldown:
     def __gt__(self, other): return float(self) > other  # noqa: E704
     def __ge__(self, other): return float(self) >= other  # noqa: E704
 
-    def reset(self, new=0):
+    def reset(self, new=0, wrap=False):
         """reset the cooldown, optionally pass a new temperature.
 
-            cooldown.reset()
-            cooldown.reset(new_temp)
+        To reuse the cooldown, it can be reset at any time, optionally with a
+        new duration.
 
         Parameters
         ----------
         new: float = 0
             If not 0, set a new timeout value for the cooldown
+
+        wrap: bool = False
+            If `wrap` is `True` and the cooldown is cold, take the time
+            overflown into account:
+
+            e.g. the temperature of a Cooldown(10) after 12 seconds is `-2`.
+
+                `cooldown.reset()` will set it back to 10.
+                `cooldown.reset(wrap=True)` will set it to 8.
+
+            Use `wrap=False` if you need a constant cooldown time.
+            Use `wrap=True` if you have a global heartbeat.
+
+            If the cooldown is still hot, `wrap` is ignored.
 
         Returns
         -------
@@ -113,9 +127,14 @@ class Cooldown:
             Can be e.g. chained with `pause()`
 
         """
+
         if new:
             self.duration = new
-        self.t0 = time.time()
+
+        overflow = (0 if self.hot or not wrap
+                    else -self.temperature % self.duration)
+        self.t0 = time.time() - overflow
+
         self.paused = False
 
         return self
@@ -149,16 +168,13 @@ class Cooldown:
         return not self.cold
 
     @property
-    def remaining(self):
-        """Time remaining until cold.
+    def temperature(self):
+        """The time difference to the cooldown duration.
 
-        This property is also aliased to "temperature".
+        `temperature` gives the time difference between now start/reset of the
+        `Cooldown`.  Can be below 0 once the `Cooldown` is cold.
 
-            time_left = cooldown.remaining
-            time_left = cooldown.temperature
-
-        Assigning to this value will change the current stateof the cooldown
-        accordingly.
+        Can also be set.
 
         Raises
         ------
@@ -170,11 +186,10 @@ class Cooldown:
         if self.paused:
             return self._remaining
         else:
-            remaining = self.duration - (time.time() - self.t0)
-            return remaining if remaining >= 0 else 0
+            return self.duration - (time.time() - self.t0)
 
-    @remaining.setter
-    def remaining(self, t=0):
+    @temperature.setter
+    def temperature(self, t=0):
         if self.paused:
             if t:
                 self._remaining = t
@@ -184,7 +199,27 @@ class Cooldown:
 
             self.t0 = time.time() - self.duration + t
 
-    temperature = remaining
+    @property
+    def remaining(self):
+        """Same as temperature, but doesn't go below 0.
+
+        `remaining` gives exactly that, the time remaining in the cooldown.  If
+        the `Cooldown` is cold, it always reports 0.
+
+        Can also be set.
+
+        Raises
+        ------
+        ValueError
+            Setting it to a value greater than the current `duration` will
+            raise raise an exception.  Use `reset(new_duration) instead.
+
+        """
+        return max(self.temperature, 0)
+
+    @remaining.setter
+    def remaining(self, t=0):
+        self.temperature = t
 
     @property
     def normalized(self):

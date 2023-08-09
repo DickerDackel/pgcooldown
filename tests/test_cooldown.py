@@ -1,7 +1,7 @@
 import pytest
 
-from pgcooldown import Cooldown
-from time import sleep, time
+from pgcooldown import Cooldown, LerpThing
+from time import sleep
 
 
 def test_init():
@@ -16,6 +16,11 @@ def test_init():
     assert c.cold
     assert not c.hot
 
+    c = Cooldown(0)
+    assert c.cold
+    assert c.remaining == 0
+    assert not c.hot
+
 
 def test_reset():
     c = Cooldown(1)
@@ -24,12 +29,22 @@ def test_reset():
     assert c.cold
     assert not c.hot
     assert not c.paused
+
     c.reset(2)
     assert round(c.duration) == 2
     assert c.remaining == c.duration
     assert not c.cold
     assert c.hot
     assert not c.paused
+
+
+def test_wrap():
+    c = Cooldown(1)
+    sleep(1.5)
+    assert c.remaining == 0
+    assert c.temperature < 0
+    c.reset(wrap=True)
+    assert round(c.temperature, 1) == 0.5
 
 
 def test_remaining():
@@ -126,7 +141,10 @@ def test_compare():
 if __name__ == '__main__':
     test_init()
     test_reset()
+    test_wrap()
+    test_remaining()
     test_pause()
     test_cold()
-    test_remaining()
     test_normalized()
+    test_copyconstructor()
+    test_compare()
