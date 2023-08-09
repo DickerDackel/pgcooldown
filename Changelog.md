@@ -1,3 +1,6 @@
+# v0.2.4a
+- `interval` was a shitty name.  `duration` now.
+
 # v0.2.4
 - Added LerpThing
 - reset(wrap=True), remaining vs. temperature

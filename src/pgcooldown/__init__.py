@@ -273,7 +273,7 @@ class LerpThing:
 
     This class can be used for scaling, color shifts, momentum, ...
 
-    It gets initialized with 2 Values for t0 and t1, and a time `interval`,
+    It gets initialized with 2 Values for t0 and t1, and a time `duration`,
     then it lerps between these values.
 
     Once the time runs out, the lerp can stop, repeat from start or bounce back
@@ -287,14 +287,14 @@ class LerpThing:
     vt1: [int | float]
         Values at t == 0 and t == 1
 
-    interval: Cooldown The length of the lerp.  This length of the interval is
-    mapped onto the range 0 - 1 as `t`.
+    duration: Cooldown The length of the lerp.  This duration is mapped onto
+    the range 0 - 1 as `t`.
 
     ease: callable = lambda x: x
         An optional easing function to put over t
 
     repeat: int = 0
-        After the interval has finished, how to proceed?
+        After the duration has passed, how to proceed?
 
             0: Don't repeat, just stop transmogrifying
             1: Reset and repeat from start
@@ -310,12 +310,12 @@ class LerpThing:
     """
     vt0: float
     vt1: float
-    interval: InitVar[Cooldown | float]
+    duration: InitVar[Cooldown | float]
     ease: callable = lambda x: x
     repeat: int = 0
 
-    def __post_init__(self, interval):
-        self.interval = interval if isinstance(interval, Cooldown) else Cooldown(interval)
+    def __post_init__(self, duration):
+        self.duration = duration if isinstance(duration, Cooldown) else Cooldown(duration)
 
     def __call__(self):
         return self.v
@@ -326,13 +326,13 @@ class LerpThing:
 
         lerp = lambda a, b, t: t * (b - a) + a
 
-        if self.interval.cold and self.repeat:
+        if self.duration.cold and self.repeat:
             if self.repeat == 2:
                 self.vt0, self.vt1 = self.vt1, self.vt0
-            self.interval.reset(wrap=True)
+            self.duration.reset(wrap=True)
 
-        if self.interval.hot:
-            t = self.interval.normalized
+        if self.duration.hot:
+            t = self.duration.normalized
             return lerp(self.vt0, self.vt1, self.ease(t))
 
         return self.vt1
