@@ -12,6 +12,10 @@ def test_cooldown():
     lt = LerpThing(0, 0, cd)
     assert lt.duration is cd
 
+    # duration = 0 always returns vt0
+    lt = LerpThing(1, 2, 0)
+    assert lt() == 1
+
 
 def test_no_repeat():
     lt = LerpThing(vt0=1, vt1=0, duration=1, repeat=0)

@@ -287,8 +287,11 @@ class LerpThing:
     vt1: [int | float]
         Values at t == 0 and t == 1
 
-    duration: Cooldown The length of the lerp.  This duration is mapped onto
-    the range 0 - 1 as `t`.
+    duration: Cooldown
+        The length of the lerp.  This duration is mapped onto the range 0 - 1
+        as `t`.
+
+        Note: If duration is 0, vt0 is always returned.
 
     ease: callable = lambda x: x
         An optional easing function to put over t
@@ -316,6 +319,20 @@ class LerpThing:
 
     def __post_init__(self, duration):
         self.duration = duration if isinstance(duration, Cooldown) else Cooldown(duration)
+
+        # This is a special case.  We return vt1 when the cooldown is cold, but
+        # if duration is 0, we're already cold right from the start, so it's
+        # more intuitive to return the start value.
+        # vt1 can be overwritten in that case, since we never will have a `t`
+        # different from 0.
+        #
+        # While setting `duration` to 0 makes no sense in itself, it might
+        # still be useful, if one wants to keep using the interface of the
+        # LerpThing, but with a lerp that is basically a constant.
+        #
+        # Setting this here once is faster than doing it on every call.
+        if duration == 0:
+            self.vt1 = self.vt0
 
     def __call__(self):
         return self.v
