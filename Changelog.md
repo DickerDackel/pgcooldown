@@ -1,3 +1,6 @@
+# v0.2.4.1
+- Fixing packaging mistake on pypi
+
 # v0.2.4a
 - `interval` was a shitty name.  `duration` now.
 
