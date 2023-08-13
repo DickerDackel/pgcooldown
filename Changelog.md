@@ -1,3 +1,9 @@
+# v0.2.5
+- Convenience wrapper LerpThing.finished
+- Doc changes
+- LerpThing always returns vt0 when duration is 0
+- MASSIVE speedup (>50%) in LerpThing
+
 # v0.2.4.1
 - Fixing packaging mistake on pypi
 
