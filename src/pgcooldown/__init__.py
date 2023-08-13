@@ -291,6 +291,9 @@ class LerpThing:
         The length of the lerp.  This duration is mapped onto the range 0 - 1
         as `t`.
 
+        This is a Cooldown object, so all configuration and query options
+        apply, if you want to modify the lerp during its runtime.
+
         Note: If duration is 0, vt0 is always returned.
 
     ease: callable = lambda x: x
@@ -303,12 +306,6 @@ class LerpThing:
             1: Reset and repeat from start
             2: Bounce back and forth.  Note, that bounce back is implemented by
                swapping vt0 and vt1.
-
-    Attributes
-    ----------
-    v: float
-        The lerped value.  This is a property which dynamically lerps the
-        value.
 
     """
     vt0: float
@@ -335,12 +332,12 @@ class LerpThing:
             self.vt1 = self.vt0
 
     def __call__(self):
+        """Return the current lerped value"""
         return self.v
 
     @property
     def v(self):
-        """Get the current value of the LerpThing."""
-
+        """The current lerped value"""
         # Note: Using cold precalculated instead of calling it twice, gave a
         # 30% speed increase!
         cold = self.duration.cold
