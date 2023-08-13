@@ -351,3 +351,7 @@ class LerpThing:
             return (self.vt1 - self.vt0) * self.ease(self.duration.normalized) + self.vt0
 
         return self.vt1
+
+    def finished(self):
+        """Just a conveninence wrapper for self.interval.cold"""
+        return self.duration.cold

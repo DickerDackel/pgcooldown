@@ -15,6 +15,13 @@ def test_cooldown():
     # duration = 0 always returns vt0
     lt = LerpThing(1, 2, 0)
     assert lt() == 1
+    assert lt.v == 1
+
+
+def test_call_is_v():
+    lt = LerpThing(0, 1, 1)
+    sleep(0.5)
+    assert round(lt.v) == round(lt())
 
 
 def test_no_repeat():
@@ -40,6 +47,12 @@ def test_easing():
     lt = LerpThing(vt0=1, vt1=0, duration=1, ease=lambda x: 1 - x)
     sleep(0.2)
     assert round(lt.v, 1) == 0.2
+
+
+def test_finished():
+    lt = LerpThing(0, 1, 0.9)
+    sleep(1)
+    assert lt.finished()
 
 
 if __name__ == '__main__':
