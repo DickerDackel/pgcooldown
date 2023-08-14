@@ -18,9 +18,10 @@ classifiers = [
 
 dependencies = [ ]
 
-[project-urls]
+[project.urls]
 homepage = "https://github.com/dickerdackel/pgcooldown"
 bugtracker = "https://github.com/DickerDackel/pgcooldown/issues"
+changelog = "https://github.com/dickerdackel/pgcooldown/ChangeLog.md"
 
 [build-system]
 requires = ["setuptools"]
