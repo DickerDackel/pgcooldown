@@ -1,3 +1,6 @@
+# v0.2.5.1
+- fixed URL definition in pyproject.toml
+
 # v0.2.5
 - Convenience wrapper LerpThing.finished
 - Doc changes
