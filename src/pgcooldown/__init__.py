@@ -91,6 +91,9 @@ class Cooldown:
         self._remaining = 0
         self.cold = cold
 
+    def __call__(self):
+        return self.remaining
+
     def __hash__(self): id(self)  # noqa: E704
     def __bool__(self): return self.hot  # noqa: E704
     def __int__(self): return int(self.temperature)  # noqa: E704
