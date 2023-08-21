@@ -1,6 +1,8 @@
+import heapq
 import time
+import weakref
 
-from dataclasses import dataclass, InitVar
+from dataclasses import dataclass, field, InitVar
 
 
 class Cooldown:
@@ -358,3 +360,117 @@ class LerpThing:
     def finished(self):
         """Just a conveninence wrapper for self.interval.cold"""
         return self.duration.cold
+
+
+@dataclass(order=True)
+class Cronjob:
+    """Input data for the `CronD` class
+
+    There is no need to instantiate this class yourself, `CronD.add` gets 3
+    parameters.
+
+    Parameters
+    ----------
+    cooldown: Cooldown | float
+        Cooldown in seconds before the task runs
+    task: callable
+        A zero parameter callback
+        If you want to provide parameters to the called function, either
+        provide a wrapper to it, or use a `functools.partial`.
+    repeat: False
+        Description of .
+
+    """
+    cooldown: Cooldown | float
+    task: callable = field(compare=False)
+    repeat: False = field(compare=False)
+
+    def __post_init__(self):
+        if not isinstance(self.cooldown, Cooldown):
+            self.cooldown = Cooldown(self.cooldown)
+
+
+class CronD:
+    """A job manager class.
+
+    In the spirit of unix's crond, this class can be used to run functions
+    after a cooldown once or repeatedly.
+
+        crond = CronD()
+
+        # `run_after_ten_seconds()` will be run after 10s.
+        cid = crond.add(10, run_after_ten_seconds, False)
+
+        # Remove the job with the id `cid` if it has not yet run or repeats.
+        crond.remove(cid)
+
+
+    Parameters
+    ----------
+
+    Attributes
+    ----------
+    heap: list[Cronjob]
+
+    """
+    def __init__(self):
+        self.heap = []
+
+    def add(self, cooldown, task, repeat=False):
+        """Schedule a new task.
+
+        Parameters
+        ----------
+        cooldown: Cooldown | float
+            Time to wait before running the task
+
+        task: callable
+            A zero parameter callback function
+
+        repeat: bool = False
+            If `True`, job will repeat infinitely or until removed.
+
+        Returns
+        -------
+        cid: weakref.ref
+            cronjob id.  Use this to remove a pending or repeating job.
+
+        """
+        cj = Cronjob(cooldown, task, repeat)
+        heapq.heappush(self.heap, cj)
+        return weakref.ref(cj)
+
+    def remove(self, cid):
+        """Remove a pending or repeating job.
+
+        Does nothing if the job is already finished.
+
+        Parameters
+        ----------
+        cid: weakref.ref
+            Cronjob ID
+
+        Returns
+        -------
+        None
+
+        """
+        if cid is not None:
+            self.heap.remove(cid())
+
+    def update(self):
+        """Run all jobs that are ready to run.
+
+        Will reschedule jobs that have `repeat = True` set.
+
+        Returns
+        -------
+        None
+
+        """
+        while self.heap and self.heap[0].cooldown.cold:
+            cronjob = heapq.heappop(self.heap)
+            cronjob.task()
+            if cronjob.repeat:
+                cronjob.cooldown.reset()
+                heapq.heappush(self.heap, cronjob)
