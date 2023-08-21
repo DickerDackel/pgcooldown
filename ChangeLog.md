@@ -1,3 +1,9 @@
+# v0.2.6
+- CronD added
+- Cooldown has __call__ now, returns remaining
+- v0.2.5.1
+- fixed URL definition in pyproject.toml
+
 # v0.2.5.1
 - fixed URL definition in pyproject.toml
 
