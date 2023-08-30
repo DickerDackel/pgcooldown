@@ -1,80 +1,65 @@
 # pgcooldown
 
-A cooldown class, checking the delta time between start and now.
+Cooldown & co...
 
-    cooldown = Cooldown(5)
+This module started with just the Cooldown class, which can be used check if a
+specified time has passed.  It is mostly indended to be used to control
+objects in a game loop, but it is general enough for other purposes as well.
 
-A trigger class to wait for n seconds.
+```py
+    fire_cooldown = Cooldown(1, cold=True)
+    while True:
+        if fire_shot and fire_cooldown.cold:
+            fire_cooldown.reset()
+            launch_bullet()
 
-If started, it saves the current time as t0.  On every check, it compares
-the then current time with t0 and returns as 'cold' if the cooldown time
-has passed.
+        ...
+```
 
-The cooldown can be paused, in which case it saves the time left.  On
-restart, it'll set again t0 to the remaining time and continues to compare
-as normal against the left cooldown time.
+With the usage of Cooldown on ramp data (e.g. a Lerp between an opaque and a
+fully transparent sprite over the time of n seconds), I came up with the
+LerpThing.  The LerpThing gives you exactly that.  A lerp between `from` and
+`to` mapped onto a `duration`.
 
-At any time, the cooldown can be reset to its initial or a new value.
+```py
+    alpha = LerpThing(0, 255, 5)
+    while True:
+        ...
+        sprite.set_alpha(alpha())
+        # or sprite.set_alpha(alpha.v)
 
-Parameters:
+        if alpha.finished:
+            sprite.kill()
+```
 
-    duration: float - Seconds to cool down
+Finally, the need to use Cooldown for scheduling the creations of game
+objects, the CronD class was added.  It schedules functions to run after a
+wait period.
 
-Attributes:
+Note, that CronD doesn't do any magic background timer stuff, it needs to be
+updated in the game loop.
 
-    remaining: float        - "temperature" to cool down from
-    duration: float         - default to initialize the cooldown after each reset()
-    normalized: float       - property that maps remaining into an interval between 0 and 1
-    paused: bool = False    - to temporarily disable the cooldown
-    hot: bool               - there is stil time remaining before cooldown
-    cold: bool              - time of the cooldown has run out
-
-Methods:
-
-    reset()
-    reset(new_cooldown_time)
-
-	set t0 to now, remove pause state, optionally set duration to new
-	value
-
-    start()
-
-	Start the cooldown again after a pause.
-
-	The cooldown is started at creation time, but can be immediately
-	paused by chaining.  See pause below.
-
-    pause()
-
-	remember time left, stop comparing delta time.  This can also be
-	used to create an cooldown that's not yet running by chaining to
-	the constructor:
-
-	    cooldown = Cooldown(10).pause()
-
-
-Synopsis:
-
-    cooldown = Cooldown(5)
+```py
+    crond = CronD()
+    crond.add(1, create_enemy(screen.center))
+    crond.add(2, create_enemy(screen.center))
+    crond.add(3, create_enemy(screen.center))
+    crond.add(4, create_enemy(screen.center))
 
     while True:
-	do_stuff()
-
-	if key_pressed
-	    if key == 'P':
-		cooldown.pause()
-	    elif key == 'ESC':
-		cooldown.start()
-
-	if cooldown.cold:
-	    launch_stuff()
-	    cooldown.reset()
-
-"""
+        ...
+        crond.update()
+```
 
 ## Installation
 
 The project home is https://github.com/dickerdackel/pgcooldown
+
+### Installing HEAD from github directly
+
+```
+pip install git+https://github.com/dickerdackel/pgcooldown
+```
 
 ### Getting it from pypi
 
