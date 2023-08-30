@@ -1,3 +1,50 @@
+"""Cooldown & co...
+
+This module started with just the Cooldown class, which can be used check if a
+specified time has passed.  It is mostly indended to be used to control
+objects in a game loop, but it is general enough for other purposes as well.
+
+    fire_cooldown = Cooldown(1, cold=True)
+    while True:
+        if fire_shot and fire_cooldown.cold:
+            fire_cooldown.reset()
+            launch_bullet()
+
+        ...
+
+With the usage of Cooldown on ramp data (e.g. a Lerp between an opaque and a
+fully transparent sprite over the time of n seconds), I came up with the
+LerpThing.  The LerpThing gives you exactly that.  A lerp between `from` and
+`to` mapped onto a `duration`.
+
+    alpha = LerpThing(0, 255, 5)
+    while True:
+        ...
+        sprite.set_alpha(alpha())
+        # or sprite.set_alpha(alpha.v)
+
+        if alpha.finished:
+            sprite.kill()
+
+Finally, the need to use Cooldown for scheduling the creations of game
+objects, the CronD class was added.  It schedules functions to run after a
+wait period.
+
+Note, that CronD doesn't do any magic background timer stuff, it needs to be
+updated in the game loop.
+
+    crond = CronD()
+    crond.add(1, create_enemy(screen.center))
+    crond.add(2, create_enemy(screen.center))
+    crond.add(3, create_enemy(screen.center))
+    crond.add(4, create_enemy(screen.center))
+
+    while True:
+        ...
+        crond.update()
+
+"""
+
 import heapq
 import time
 import weakref
