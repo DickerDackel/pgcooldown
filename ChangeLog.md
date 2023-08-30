@@ -1,3 +1,9 @@
+# v0.2.7
+- README is mostly the docstring of the main class now
+- Merge branch 'main' of https://github.com/dickerdackel/pgcooldown
+- Module docs added
+- Forgot Updated changelog in release
+
 # v0.2.6.1
 - Forgot Updated changelog in release
 
