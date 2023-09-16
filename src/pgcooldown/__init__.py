@@ -210,7 +210,7 @@ class Cooldown:
 
         Note
         ----
-        Since v.0.2.8, this is no longer a property but a function.
+        Since v0.2.8, this is no longer a property but a function.
 
         """
         return self.temperature() <= 0
@@ -238,7 +238,7 @@ class Cooldown:
 
         Note
         ----
-        Since v.0.2.8, this is no longer a property but a function.
+        Since v0.2.8, this is no longer a property but a function.
         """
         if self.paused:
             return self._remaining
@@ -277,7 +277,7 @@ class Cooldown:
 
         Note
         ----
-        Since v.0.2.8, this is no longer a property but a function.
+        Since v0.2.8, this is no longer a property but a function.
 
         """
         return max(self.temperature(), 0)
@@ -289,7 +289,7 @@ class Cooldown:
 
         Note
         ----
-        Since v.0.2.8, this is no longer a property but a function.
+        Since v0.2.8, this is no longer a property but a function.
 
         """
         return 1 - self.remaining() / self.duration
