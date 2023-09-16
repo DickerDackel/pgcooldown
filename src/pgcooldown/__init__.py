@@ -6,7 +6,7 @@ objects in a game loop, but it is general enough for other purposes as well.
 
     fire_cooldown = Cooldown(1, cold=True)
     while True:
-        if fire_shot and fire_cooldown.cold:
+        if fire_shot and fire_cooldown.cold():
             fire_cooldown.reset()
             launch_bullet()
 
@@ -66,7 +66,7 @@ class Cooldown:
                 elif key == 'ESC':
                     cooldown.start()
 
-            if cooldown.cold:
+            if cooldown.cold():
                 launch_stuff()
                 cooldown.reset()
 
@@ -138,15 +138,15 @@ class Cooldown:
         self.t0 = time.time()
         self.paused = False
         self._remaining = 0
-        self.cold = cold
+        self.set_cold(cold)
 
     def __call__(self):
-        return self.remaining
+        return self.remaining()
 
     def __hash__(self): id(self)  # noqa: E704
-    def __bool__(self): return self.hot  # noqa: E704
-    def __int__(self): return int(self.temperature)  # noqa: E704
-    def __float__(self): return float(self.temperature)  # noqa: E704
+    def __bool__(self): return self.hot()  # noqa: E704
+    def __int__(self): return int(self.temperature())  # noqa: E704
+    def __float__(self): return float(self.temperature())  # noqa: E704
     def __lt__(self, other): return float(self) < other  # noqa: E704
     def __le__(self, other): return float(self) <= other  # noqa: E704
     def __eq__(self, other): return float(self) == other  # noqa: E704
@@ -189,23 +189,19 @@ class Cooldown:
         if new:
             self.duration = new
 
-        overflow = (0 if self.hot or not wrap
-                    else -self.temperature % self.duration)
+        overflow = (0 if self.hot() or not wrap
+                    else -self.temperature() % self.duration)
         self.t0 = time.time() - overflow
 
         self.paused = False
 
         return self
 
-    @property
     def cold(self):
         """Current state of the cooldown.
 
         The cooldown is cold, if all its time has passed.  From here, you can
         either act on it and/or reset.
-
-        Can be set to true to immediately set the timer to zero.  `duration`
-        after reset is not impacted by this.
 
         Returns
         -------
@@ -213,41 +209,43 @@ class Cooldown:
             True if cold
 
         """
-        return self.remaining <= 0
+        return self.temperature() <= 0
 
-    @cold.setter
-    def cold(self, state):
+    def set_cold(self, state):
+        """Immediately set the remaining time to zero.
+
+        `duration` is not impacted by this.  After a `reset()` the cooldown
+        will behave as before.
+        """
+
         if state:
             self.t0 = time.time() - self.duration
 
-    @property
     def hot(self):
-        """`not cooldown.cold` (See above)"""
-        return not self.cold
+        """Counterpart to cold() if you prefere this more."""
+        return self.temperature() > 0
 
-    @property
     def temperature(self):
         """The time difference to the cooldown duration.
 
         `temperature` gives the time difference between now start/reset of the
         `Cooldown`.  Can be below 0 once the `Cooldown` is cold.
-
-        Can also be set.
-
-        Raises
-        ------
-        ValueError
-            Setting it to a value greater than the current `duration` will
-            raise raise an exception.  Use `reset(new_duration) instead.
-
+        Also see `remaining()`
         """
         if self.paused:
             return self._remaining
         else:
             return self.duration - (time.time() - self.t0)
 
-    @temperature.setter
-    def temperature(self, t=0):
+    def set_to(self, t=0):
+        """Set the current remaining time to `t`.
+
+        Raises
+        ------
+        ValueError
+            Setting it to a value greater than the current `duration` will
+            raise raise an exception.  Use `reset(new_duration) instead.
+        """
         if self.paused:
             if t:
                 self._remaining = t
@@ -257,14 +255,11 @@ class Cooldown:
 
             self.t0 = time.time() - self.duration + t
 
-    @property
     def remaining(self):
         """Same as temperature, but doesn't go below 0.
 
         `remaining` gives exactly that, the time remaining in the cooldown.  If
         the `Cooldown` is cold, it always reports 0.
-
-        Can also be set.
 
         Raises
         ------
@@ -273,20 +268,15 @@ class Cooldown:
             raise raise an exception.  Use `reset(new_duration) instead.
 
         """
-        return max(self.temperature, 0)
+        return max(self.temperature(), 0)
 
-    @remaining.setter
-    def remaining(self, t=0):
-        self.temperature = t
-
-    @property
     def normalized(self):
         """Return the time left as fraction between 0 and 1.
 
         Use this as `t` for lerping or easing.
 
         """
-        return 1 - self.remaining / self.duration
+        return 1 - self.remaining() / self.duration
 
     def pause(self):
         """Pause the cooldown.
@@ -303,7 +293,7 @@ class Cooldown:
 
         """
 
-        self._remaining = self.remaining
+        self._remaining = self.remaining()
         self.paused = True
 
         return self
@@ -313,7 +303,7 @@ class Cooldown:
         if not self.paused: return self
 
         self.paused = False
-        self.remaining = self._remaining
+        self.set_to(self._remaining)
         self._remaining = 0
 
         return self
@@ -385,14 +375,9 @@ class LerpThing:
 
     def __call__(self):
         """Return the current lerped value"""
-        return self.v
-
-    @property
-    def v(self):
-        """The current lerped value"""
         # Note: Using cold precalculated instead of calling it twice, gave a
         # 30% speed increase!
-        cold = self.duration.cold
+        cold = self.duration.cold()
         if cold and self.repeat:
             if self.repeat == 2:
                 self.vt0, self.vt1 = self.vt1, self.vt0
@@ -400,13 +385,65 @@ class LerpThing:
             cold = False
 
         if not cold:
-            return (self.vt1 - self.vt0) * self.ease(self.duration.normalized) + self.vt0
+            return (self.vt1 - self.vt0) * self.ease(self.duration.normalized()) + self.vt0
 
         return self.vt1
 
     def finished(self):
         """Just a conveninence wrapper for self.interval.cold"""
-        return self.duration.cold
+        return self.duration.cold()
+
+
+class AutoLerpThing:
+    """A descriptor class for LerpThing.
+
+    If an attribute could either be a constant value, or a LerpThing, use this
+    descriptor to automatically handle this.
+
+    Note
+    ----
+    This is a proof of concept.  This might or might not stay in here, the
+    interface might or might not change.  I'm not sure if this has any
+    advantages over a property, except not having so much boilerplate in your
+    class if you have multiple LerpThings in it.
+
+    Use it like this:
+        class SomeClass:
+
+            usage1 = AutoLerpThing()
+            usage2 = AutoLerpThing()
+            usage3 = AutoLerpThing()
+
+            def __init__(self):
+                self.usage1 = 7
+                self.usage2 = (0, 360, 5)
+                self.usage3 = LerpThing(0, 360, 5)
+
+        x = SomeClass()
+        print(x.lerp)
+        sleep(duration / 2)
+        print(x.lerp)
+
+    """
+    def __set_name__(self, obj, name):
+        self.attrib = f'__lerpthing_{name}'
+
+    def __set__(self, obj, val):
+        if isinstance(val, (int, float)):
+            obj.__setattr__(self.attrib, val)
+        elif isinstance(val, LerpThing):
+            obj.__setattr__(self.attrib, val)
+        elif isinstance(val, (tuple, list, set)):
+            obj.__setattr__(self.attrib, LerpThing(*val))
+        else:
+            raise TypeError(f'{self.attrib} must be either a number or a LerpThing')
+
+    def __get__(self, obj, parent):
+        if obj is None:
+            return self
+
+        val = obj.__getattribute__(self.attrib)
+        return val() if isinstance(val, LerpThing) else val
 
 
 @dataclass(order=True)
@@ -515,9 +552,9 @@ class CronD:
         None
 
         """
-        while self.heap and self.heap[0].cooldown.cold:
+        while self.heap and self.heap[0].cooldown.cold():
             cronjob = heapq.heappop(self.heap)
             cronjob.task()
             if cronjob.repeat:
-                cronjob.cooldown.reset()
+                cronjob.cooldown.reset(wrap=True)
                 heapq.heappush(self.heap, cronjob)

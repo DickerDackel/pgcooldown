@@ -1,5 +1,6 @@
 import pytest
 
+from pytest import approx
 from pgcooldown import Cooldown, LerpThing
 from time import sleep
 
@@ -8,114 +9,116 @@ def test_init():
     c = Cooldown(1)
     assert c.duration == 1
     assert c.paused is False
-    assert c.remaining >= 0
+    assert c.remaining() >= 0
 
     c = Cooldown(1, cold=True)
     assert c.duration == 1
-    assert c.remaining == 0
-    assert c.cold
-    assert not c.hot
+    assert c.remaining() == 0
+    assert c.cold()
+    assert not c.hot()
 
     c = Cooldown(0)
-    assert c.cold
-    assert c.remaining == 0
-    assert not c.hot
+    assert c.cold()
+    assert c.remaining() == 0
+    assert not c.hot()
+
+
+def test_cold():
+    c = Cooldown(0.1)
+    sleep(0.2)
+    assert c.cold()
+
+    c = Cooldown(1)
+    c.set_cold(True)
+    assert c.cold()
+    assert not c.hot()
+    assert c.duration == 1
 
 
 def test_reset():
     c = Cooldown(1)
     sleep(2)
-    assert c.remaining == 0
-    assert c.cold
-    assert not c.hot
+    assert c.remaining() == 0
+    assert c.cold()
+    assert not c.hot()
     assert not c.paused
 
     c.reset(2)
-    assert round(c.duration) == 2
-    assert c.remaining == c.duration
-    assert not c.cold
-    assert c.hot
+    assert approx(c.duration, abs=0.01) == 2
+    assert approx(c.remaining(), abs=0.01) == c.duration
+    assert not c.cold()
+    assert c.hot()
     assert not c.paused
 
 
 def test_wrap():
     c = Cooldown(1)
     sleep(1.5)
-    assert c.remaining == 0
-    assert c.temperature < 0
+    assert c.remaining() == 0
+    assert c.temperature() < 0
     c.reset(wrap=True)
-    assert round(c.temperature, 1) == 0.5
+    assert approx(c.temperature(), abs=0.01) == 0.5
 
 
 def test_remaining():
+    c = Cooldown(0.1)
+    assert approx(c.remaining(), abs=0.01) == 0.1
+    sleep(0.05)
+    assert approx(c.remaining(), abs=0.01) == 0.05
+    sleep(0.1)
+    assert c.remaining() == 0
+    assert approx(c.temperature(), abs=0.01) == -0.05
+    c.reset(1)
+    sleep(0.5)
+    c.set_to(1)
+    assert approx(c.remaining(), abs=0.01) == 1
+
+
+def test_set_to():
     c = Cooldown(1)
-    assert round(c.remaining) == 1
     with pytest.raises(ValueError) as e:
-        c.remaining = 2
+        c.set_to(2)
     assert e.type is ValueError
     assert 'Cannot set remaining' in str(e.value)
-    assert round(c.remaining) == 1
-    assert not c.cold
-    assert c.hot
-    sleep(0.5)
-    assert not c.cold
-    assert c.hot
-    assert c.remaining > 0
-    sleep(1)
-    assert c.cold
-    assert not c.hot
-    assert c.remaining == 0
-    c.reset(3)
-    sleep(2)
-    c.remaining = 2
-    assert round(c.remaining) == 2
+    assert approx(c.remaining(), abs=0.01) == 1
 
 
 def test_pause():
     c = Cooldown(5).pause()
-    assert c.remaining == 5
+    assert c.remaining() == 5
     sleep(1)
-    assert c.remaining == 5
+    assert c.remaining() == 5
     c.start()
     sleep(1)
     c.pause()
-    assert round(c.remaining) == 4
+    assert approx(c.remaining(), abs=0.01) == 4
     sleep(1)
-    assert round(c.remaining) == 4
+    assert approx(c.remaining(), abs=0.01) == 4
     c.start()
     sleep(1)
-    assert round(c.remaining) == 3
+    assert approx(c.remaining(), abs=0.01) == 3
     c.reset()
     c.pause()
-    c.remaining = 4.1
-    assert c.remaining == 4.1
+    c.set_to(4.1)
+    assert c.remaining() == 4.1
     c.start()
     sleep(0.1)
-    assert round(c.remaining) == 4
-
-
-def test_cold():
-    c = Cooldown(1)
-    c.cold = True
-    assert c.cold
-    assert not c.hot
-    assert c.duration == 1
-    assert c.remaining == 0
+    assert approx(c.remaining(), abs=0.01) == 4
 
 
 def test_normalized():
     c = Cooldown(4)
-    # Multiply by 100, since we can't round the 0..1 fractions
-    assert round(c.normalized * 100) == 0
+    # Multiply by 100 gives us more leeway to cope with load impact
+    assert approx(c.normalized() * 100, abs=0.1) == 0
     sleep(1)
-    assert round(c.normalized * 100) == 25
+    assert approx(c.normalized() * 100, abs=0.1) == 25
     sleep(1)
-    assert round(c.normalized * 100) == 50
+    assert approx(c.normalized() * 100, abs=0.1) == 50
     sleep(1)
-    assert round(c.normalized * 100) == 75
+    assert approx(c.normalized() * 100, abs=0.1) == 75
     sleep(1)
-    assert round(c.normalized * 100) == 100
-    assert c.cold
+    assert approx(c.normalized() * 100, abs=0.1) == 100
+    assert c.cold()
 
 
 def test_copyconstructor():
@@ -140,11 +143,12 @@ def test_compare():
 
 if __name__ == '__main__':
     test_init()
+    test_cold()
     test_reset()
     test_wrap()
     test_remaining()
+    test_set_to()
     test_pause()
-    test_cold()
     test_normalized()
     test_copyconstructor()
     test_compare()
