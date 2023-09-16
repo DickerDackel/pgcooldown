@@ -1,3 +1,35 @@
+# v0.2.8
+Breaking change!  Properties gone!
+
+I was aware, that there is a slight overhead when using properties, but
+during A benchmark, that difference turned out to be 17%.
+
+Since this package is still marked as Alpha and probably nobody is using
+it besides me, the interface is now changed from properties to functions
+in all places.
+
+Tests needed to be adapted, but run clean now (and also more exact using
+`pytest.approx` instead of `round`.
+
+The following properties now need to be called as functions:
+
+    cold                -> cold()
+    cold.setter         -> set_cold(bool)
+    hot                 -> hot()
+    temperature         -> temperature()
+    temperature.setter  -> set_to(val)
+    remaining           -> remaining()
+    remaining.setter    -> set_to(val)
+    normalized          -> normalized()
+    v                   -> removed, just use instance()
+
+As stated initially, this is 17% less overhead when testing for cold,
+etc.  Performance of LerpThing increased from 1.3mio calls to 1.8mio due
+to this change.
+
+Sorry for any inconvenience, if anybody is using this, but that bad
+design decision needed to be fixed if any more people would use this.
+
 # v0.2.7
 - README is mostly the docstring of the main class now
 - Merge branch 'main' of https://github.com/dickerdackel/pgcooldown

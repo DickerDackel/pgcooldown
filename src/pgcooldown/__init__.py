@@ -208,6 +208,10 @@ class Cooldown:
         bool
             True if cold
 
+        Note
+        ----
+        Since v.0.2.8, this is no longer a property but a function.
+
         """
         return self.temperature() <= 0
 
@@ -231,6 +235,10 @@ class Cooldown:
         `temperature` gives the time difference between now start/reset of the
         `Cooldown`.  Can be below 0 once the `Cooldown` is cold.
         Also see `remaining()`
+
+        Note
+        ----
+        Since v.0.2.8, this is no longer a property but a function.
         """
         if self.paused:
             return self._remaining
@@ -267,6 +275,10 @@ class Cooldown:
             Setting it to a value greater than the current `duration` will
             raise raise an exception.  Use `reset(new_duration) instead.
 
+        Note
+        ----
+        Since v.0.2.8, this is no longer a property but a function.
+
         """
         return max(self.temperature(), 0)
 
@@ -274,6 +286,10 @@ class Cooldown:
         """Return the time left as fraction between 0 and 1.
 
         Use this as `t` for lerping or easing.
+
+        Note
+        ----
+        Since v.0.2.8, this is no longer a property but a function.
 
         """
         return 1 - self.remaining() / self.duration
