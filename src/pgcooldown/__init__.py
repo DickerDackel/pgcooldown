@@ -160,6 +160,8 @@ class Cooldown:
         To reuse the cooldown, it can be reset at any time, optionally with a
         new duration.
 
+        reset() also clears pause.
+
         Parameters
         ----------
         new: float = 0
