@@ -22,6 +22,18 @@ def test_init():
     assert c.remaining() == 0
     assert not c.hot()
 
+    c = Cooldown(10, paused=True)
+    assert c.paused
+    assert c.remaining() == 10
+    c.start()
+    sleep(1)
+    assert approx(c.remaining(), abs=0.01) == c.duration - 1
+
+
+def test_repr():
+    c = Cooldown(10)
+    assert repr(c) == 'Cooldown(duration=10.0, cold=False, paused=False)'
+
 
 def test_cold():
     c = Cooldown(0.1)
@@ -143,6 +155,7 @@ def test_compare():
 
 if __name__ == '__main__':
     test_init()
+    test_repr()
     test_cold()
     test_reset()
     test_wrap()

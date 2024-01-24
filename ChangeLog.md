@@ -1,3 +1,8 @@
+# v0.2.9
+- Pause can be passed to init, useful repr
+- Note in docs, that Cooldown.reset() also unpauses.
+- Update README.md
+
 # v0.2.8
 Breaking change!  Properties gone!
 
