@@ -130,18 +130,21 @@ class Cooldown:
         convenience to not write `cooldown not cold` all over the place.
 
     """
-    def __init__(self, duration, cold=False):
+    def __init__(self, duration, cold=False, paused=False):
         if isinstance(duration, Cooldown):
             self.duration = duration.duration
         else:
             self.duration = float(duration)
         self.t0 = time.time()
-        self.paused = False
-        self._remaining = 0
+        self.paused = paused
+        self._remaining = duration if paused else 0
         self.set_cold(cold)
 
     def __call__(self):
         return self.remaining()
+
+    def __repr__(self):
+        return f'Cooldown(duration={self.duration}, cold={self.cold()}, paused={self.paused})'
 
     def __hash__(self): id(self)  # noqa: E704
     def __bool__(self): return self.hot()  # noqa: E704
