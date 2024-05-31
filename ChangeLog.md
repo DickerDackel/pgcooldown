@@ -1,3 +1,6 @@
+# v0.2.10
+- typehints
+
 # v0.2.9
 - Pause can be passed to init, useful repr
 - Note in docs, that Cooldown.reset() also unpauses.
