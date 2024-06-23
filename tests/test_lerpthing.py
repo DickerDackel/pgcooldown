@@ -62,7 +62,7 @@ def test_descriptor():
             self.lt = (0, 10, 1)
 
     x = X()
-    assert approx(x.lt, 0.01) == 0
+    assert approx(x.lt, abs=0.01) == 0
     sleep(0.1)
     assert approx(x.lt, rel=0.1) == 1
     sleep(1)

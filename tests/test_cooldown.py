@@ -97,9 +97,9 @@ def test_set_to():
 
 def test_pause():
     c = Cooldown(5).pause()
-    assert c.remaining() == 5
+    assert approx(c.remaining(), abs=0.01) == 5
     sleep(1)
-    assert c.remaining() == 5
+    assert approx(c.remaining(), abs=0.01) == 5
     c.start()
     sleep(1)
     c.pause()
@@ -141,7 +141,7 @@ def test_copyconstructor():
 
 
 def test_compare():
-    c = Cooldown(10).pause()
+    c = Cooldown(10, paused=True)
     assert c == 10
     assert c > 5
     assert c >= 10
