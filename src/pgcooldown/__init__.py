@@ -297,7 +297,7 @@ class Cooldown:
         Since v0.2.8, this is no longer a property but a function.
 
         """
-        return 1 - self.remaining() / self.duration
+        return (1 - self.remaining() / self.duration) if self.duration else 0
 
     def pause(self):
         """Pause the cooldown.

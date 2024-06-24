@@ -1,3 +1,8 @@
+# v0.2.11
+- Allow duration of 0
+- Operators for LerpThing
+- Test updates and enhancements
+
 # v0.2.10
 - typehints
 
