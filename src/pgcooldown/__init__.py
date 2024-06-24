@@ -410,6 +410,17 @@ class LerpThing:
 
         return self.vt1
 
+    def __hash__(self): id(self)  # noqa: E704
+    def __bool__(self): return bool(self())  # noqa: E704
+    def __int__(self): return int(self())  # noqa: E704
+    def __float__(self): return self()  # noqa: E704
+    def __lt__(self, other): return self() < other  # noqa: E704
+    def __le__(self, other): return self() <= other  # noqa: E704
+    def __eq__(self, other): return self() == other  # noqa: E704
+    def __ne__(self, other): return self() != other  # noqa: E704
+    def __gt__(self, other): return self() > other  # noqa: E704
+    def __ge__(self, other): return self() >= other  # noqa: E704
+
     def finished(self):
         """Just a conveninence wrapper for self.interval.cold"""
         return self.duration.cold()

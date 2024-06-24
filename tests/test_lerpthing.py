@@ -49,9 +49,24 @@ def test_easing():
 
 
 def test_finished():
-    lt = LerpThing(0, 1, 0.9)
+    lt = LerpThing(vt0=0, vt1=1, duration=0.9)
     sleep(1)
     assert lt.finished()
+
+
+def test_operators():
+    lt = LerpThing(vt0=0, vt1=10, duration=1)
+    lt.duration.pause()
+    lt.duration.set_to(0.5)
+
+    assert bool(lt)
+    assert int(lt) == 5
+    assert approx(float(lt), abs=0.01) == 5
+    assert lt < 5.001
+    assert lt <= 5
+    assert lt != 42
+    assert lt > 4.99
+    assert lt >= 5
 
 
 def test_descriptor():
