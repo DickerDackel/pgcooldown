@@ -1,3 +1,6 @@
+# v0.2.13
+- Fix division by zero if duration == 0
+
 # v0.2.12
 - Allow duration of 0
 - Operators for LerpThing
