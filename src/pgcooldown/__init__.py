@@ -194,7 +194,7 @@ class Cooldown:
         if new:
             self.duration = new
 
-        overflow = (0 if self.hot() or not wrap
+        overflow = (0 if self.hot() or not wrap or self.duration == 0
                     else -self.temperature() % self.duration)
         self.t0 = time.time() - overflow
 
