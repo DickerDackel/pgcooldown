@@ -413,7 +413,7 @@ class LerpThing:
     def __hash__(self): id(self)  # noqa: E704
     def __bool__(self): return bool(self())  # noqa: E704
     def __int__(self): return int(self())  # noqa: E704
-    def __float__(self): return self()  # noqa: E704
+    def __float__(self): return float(self())  # noqa: E704
     def __lt__(self, other): return self() < other  # noqa: E704
     def __le__(self, other): return self() <= other  # noqa: E704
     def __eq__(self, other): return self() == other  # noqa: E704
