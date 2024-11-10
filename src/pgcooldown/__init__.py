@@ -198,7 +198,7 @@ class XCooldown:
         if new:
             self.duration = new
 
-        overflow = (0 if self.hot() or not wrap
+        overflow = (0 if self.hot() or not wrap or self.duration == 0
                     else -self.temperature() % self.duration)
         self.t0 = time.time() - overflow
 
@@ -417,7 +417,7 @@ class LerpThing:
     def __hash__(self): id(self)  # noqa: E704
     def __bool__(self): return bool(self())  # noqa: E704
     def __int__(self): return int(self())  # noqa: E704
-    def __float__(self): return self()  # noqa: E704
+    def __float__(self): return float(self())  # noqa: E704
     def __lt__(self, other): return self() < other  # noqa: E704
     def __le__(self, other): return self() <= other  # noqa: E704
     def __eq__(self, other): return self() == other  # noqa: E704
