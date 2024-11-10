@@ -55,7 +55,7 @@ static void cooldown_dealloc(Cooldown *self);
 static PyObject * cooldown_repr(Cooldown *self);
 static PyObject * cooldown___call__(Cooldown *self);
 static PyObject * cooldown___hash__(Cooldown *self);
-static PyObject * cooldown___bool__(Cooldown *self);
+static int cooldown___bool__(Cooldown *self);
 static PyObject * cooldown___int__(Cooldown *self);
 static PyObject * cooldown___float__(Cooldown *self);
 static PyObject * cooldown_richcompare(PyObject *o1, PyObject *o2, int op);
@@ -439,9 +439,9 @@ static PyObject * cooldown___hash__(Cooldown *self) {
 }
 
 
-static PyObject * cooldown___bool__(Cooldown *self) {
+static int cooldown___bool__(Cooldown *self) {
     printf("Bool conversion called!\n");
-    return PyBool_FromLong(!is_cold(self));
+    return !is_cold(self);
 }
 
 
