@@ -51,8 +51,10 @@ import weakref
 
 from dataclasses import dataclass, field, InitVar
 
+from pgcooldown_ import Cooldown
 
-class Cooldown:
+
+class XCooldown:
     """A cooldown/counter class to wait for stuff in games.
 
         cooldown = Cooldown(5)
@@ -122,10 +124,12 @@ class Cooldown:
     paused: bool
         to check if the cooldown is paused.
 
-    cold: bool
+    Methods
+    -------
+    cold(): bool
         Has the time of the cooldown run out?
 
-    hot: bool
+    hot(): bool
         Is there stil time remaining before cooldown?  This is just for
         convenience to not write `cooldown not cold` all over the place.
 
@@ -406,7 +410,7 @@ class LerpThing:
             cold = False
 
         if not cold:
-            return (self.vt1 - self.vt0) * self.ease(self.duration.normalized()) + self.vt0
+            return (self.vt1 - self.vt0) * self.ease(self.duration.normalized) + self.vt0
 
         return self.vt1
 
