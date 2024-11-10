@@ -440,7 +440,6 @@ static PyObject * cooldown___hash__(Cooldown *self) {
 
 
 static int cooldown___bool__(Cooldown *self) {
-    printf("Bool conversion called!\n");
     return !is_cold(self);
 }
 
