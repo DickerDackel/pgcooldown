@@ -31,10 +31,13 @@ def test_no_repeat():
 
 
 def test_repeat():
+    lt = LerpThing(vt0=0, vt1=1, duration=1, repeat=1)
+    sleep(1.2)
+    assert approx(lt(), 0.01) == 0.2
+
     lt = LerpThing(vt0=1, vt1=0, duration=1, repeat=1)
     sleep(1.2)
     assert approx(lt(), 0.01) == 0.8
-
 
 def test_bounce():
     lt = LerpThing(vt0=1, vt1=0, duration=1, repeat=2)
