@@ -1,5 +1,3 @@
-import pytest
-
 from time import sleep
 from pgcooldown import Cooldown, LerpThing, AutoLerpThing
 from pytest import approx
@@ -38,6 +36,7 @@ def test_repeat():
     lt = LerpThing(vt0=1, vt1=0, duration=1, repeat=1)
     sleep(1.2)
     assert approx(lt(), 0.01) == 0.8
+
 
 def test_bounce():
     lt = LerpThing(vt0=1, vt1=0, duration=1, repeat=2)

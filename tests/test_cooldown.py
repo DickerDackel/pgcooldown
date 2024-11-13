@@ -1,7 +1,7 @@
 import pytest
 
 from pytest import approx
-from pgcooldown import Cooldown, LerpThing
+from pgcooldown import Cooldown
 from time import sleep
 
 
