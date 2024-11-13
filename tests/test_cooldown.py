@@ -155,6 +155,19 @@ def test_compare():
     assert float(c) == 10.0
 
 
+def test_iter():
+    c = Cooldown(1, paused=True)
+    it = iter(c)
+    c.start()
+    assert approx(next(it), abs=0.1) == 1
+    sleep(0.5)
+    assert approx(next(it), abs=0.1) == 0.5
+    sleep(1)
+    with pytest.raises(StopIteration) as e:
+        next(it)
+    assert e.type is StopIteration
+
+
 if __name__ == '__main__':
     test_init()
     test_repr()
