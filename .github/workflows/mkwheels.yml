@@ -53,7 +53,7 @@ jobs:
 
     - name: Build wheel
       run: |
-        python -m build --wheels
+        python -m build --wheel
 
     - name: Test-Install wheel
       run: |
