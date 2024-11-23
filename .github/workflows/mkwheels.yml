@@ -58,3 +58,10 @@ jobs:
     - name: Test-Install wheel
       run: |
         python -m pip install dist/*whl
+
+    - name: Get artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: wheel
+          dist/pgcooldown*.whl
+          dist/pgcooldown*.tar.gz
