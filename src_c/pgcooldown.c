@@ -2,7 +2,7 @@
 #include <sys/time.h>
 #include <Python.h>
 
-#include "docstrings.h"
+#include <docstrings.h>
 
 /*----------------------------------------------------------------------
      ____        __ _       _ _   _                 

@@ -1,5 +1,8 @@
 #!/bin/env python3
 
+from os.path import isdir
+
+
 DOCSTRINGS = {
     'MODULE': """Cooldown & co...
 
@@ -307,7 +310,11 @@ self
 """,
 }
 
-with open('src_c/docstrings.h', 'w') as f:
+if not isdir('include'):
+    print('Must be used in top of project directory')
+    raise SystemExit
+
+with open('include/docstrings.h', 'w') as f:
     for name, docstring in DOCSTRINGS.items():
         ds = '\\n'.join(docstring.replace('"', '\\"').splitlines())
         print(f'#define DOCSTRING_{name} "{ds}"', file=f)
