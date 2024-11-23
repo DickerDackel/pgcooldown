@@ -65,7 +65,7 @@ jobs:
         name: wheel
         path: |
           dist/pgcooldown*.whl
-      wtih:
+      with:
         name: sdist
         path: |
           dist/pgcooldown*.tar.gz
