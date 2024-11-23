@@ -34,7 +34,7 @@ jobs:
 
     - name: Install for testing
       run: |
-        pip install .
+        python -m pip install .
 
     - name: Lint with flake8
       run: |
