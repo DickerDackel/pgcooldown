@@ -59,6 +59,10 @@ jobs:
       run: |
         python -m pip install dist/*whl
 
+    - name: Check what was built
+      run: |
+        ls -ltra dist
+
     - name: Get artifacts
       uses: actions/upload-artifact@v4
       with:
