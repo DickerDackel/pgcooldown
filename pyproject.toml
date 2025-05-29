@@ -34,3 +34,7 @@ testpaths = [
     "tests",
 ]
 
+[tool.cibuildwheel]
+# Don't build for pypy
+skip = "pp*"
+
