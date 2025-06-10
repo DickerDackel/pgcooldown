@@ -37,4 +37,4 @@ testpaths = [
 [tool.cibuildwheel]
 # Don't build for pypy
 skip = "pp*"
-
+build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]

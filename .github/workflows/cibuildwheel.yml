@@ -2,10 +2,6 @@ name: cibuildwheel
 
 on: [workflow_dispatch]
 
-# env:
-#   global:
-#     - CIBW_SKIP="cp36-* cp37-* cp38-* cp39-* cp310-*"
-
 jobs:
   build_wheels:
     runs-on: ${{ matrix.os }}
@@ -13,7 +9,6 @@ jobs:
       matrix:
         # os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
         os: [ubuntu-latest]
-        build: [cp310-*, cp311-*, cp312-*, cp313-*]
 
     steps:
       - uses: actions/checkout@v4
