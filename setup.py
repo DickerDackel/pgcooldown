@@ -1,4 +1,3 @@
-from os import environ
 from setuptools import Extension, setup
 
 setup(
