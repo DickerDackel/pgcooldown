@@ -285,6 +285,41 @@ self
     For chaining.
 
 """,
+    'COOLDOWN_SET_COLD': """Force the cooldown to cold.
+
+This does basically the same as setting the `temperature` property to zero.
+
+Returns
+-------
+None
+
+Note
+----
+This was changed from a property to a function in v0.2.8, due to the
+performance impact of properties.  With the rewrite in C,this is no longer an
+issue.
+
+If you prefer writing to an attribute insteadof calling a setter, use
+`temperature` or `remaining`.
+""",
+    'COOLDOWN_SET_TO': """Set the remaining time until cold
+
+This does basically the same as assigning to `temperature` or `remaining`.
+
+Returns
+-------
+None
+
+Note
+----
+This was changed from a property to a function in v0.2.8, due to the
+performance impact of properties.  With the rewrite in C,this is no longer an
+issue.
+
+If you prefer writing to an attribute insteadof calling a setter, use
+`temperature` or `remaining`.
+""",
+
     'COOLDOWN_DURATION': """duration: float
     When calling `reset`, the cooldown is set to this value. Can be
     assigned to directly or by calling `cooldown.reset(duration)`

@@ -47,6 +47,14 @@ def test_cold():
     assert c.duration == 1
 
 
+def test_temperature():
+    c = Cooldown(1)
+    c.temperature = 0
+    assert c.cold()
+    assert not c.hot()
+    assert c.duration == 1
+
+
 def test_reset():
     c = Cooldown(1)
     sleep(2)
@@ -93,6 +101,12 @@ def test_set_to():
     assert e.type is ValueError
     assert 'value larger than duration' in str(e.value)
     assert approx(c.remaining, abs=0.01) == 1
+
+
+def test_set_duration():
+    c = Cooldown(1)
+    c.duration = 2
+    assert approx(c.remaining, abs=0.01) == 2
 
 
 def test_pause():

@@ -140,8 +140,8 @@ static PyMethodDef cooldown_methods_[] = {
     {"pause", (PyCFunction)cooldown_pause, METH_NOARGS, DOCSTRING_COOLDOWN_PAUSE},
     {"start", (PyCFunction)cooldown_start, METH_NOARGS, NULL},
     {"is_paused", (PyCFunction)cooldown_is_paused, METH_NOARGS, NULL},
-    {"set_to", (PyCFunction)cooldown_set_to, METH_FASTCALL, "Deprecated.  Set Cooldown.duration directly"},
-    {"set_cold", (PyCFunction)cooldown_set_cold, METH_NOARGS, "Deprecated.  Set Cooldown.temperature directly"},
+    {"set_to", (PyCFunction)cooldown_set_to, METH_FASTCALL, DOCSTRING_COOLDOWN_SET_TO},
+    {"set_cold", (PyCFunction)cooldown_set_cold, METH_NOARGS, DOCSTRING_COOLDOWN_SET_COLD},
     {NULL},
 };
 
