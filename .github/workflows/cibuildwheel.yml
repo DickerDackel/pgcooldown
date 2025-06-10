@@ -2,6 +2,10 @@ name: cibuildwheel
 
 on: [workflow_dispatch]
 
+env:
+  global:
+    - CIBW_SKIP="cp36-* cp37-* cp38-* cp39-* cp310-*"
+
 jobs:
   build_wheels:
     runs-on: ${{ matrix.os }}
@@ -20,7 +24,7 @@ jobs:
       - name: Build wheels
         run: python -m cibuildwheel --output-dir=wheelhouse
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v
         with:
           name: cibw-wheel-${{matrix.os}}-${{strategy.job-index}}
           path: wheelhouse/*whl
