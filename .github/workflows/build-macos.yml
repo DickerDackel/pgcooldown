@@ -1,4 +1,4 @@
-name: cibuildwheel
+name: build-macos-latest
 
 on: [workflow_dispatch]
 
