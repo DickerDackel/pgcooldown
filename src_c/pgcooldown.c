@@ -1,6 +1,16 @@
 #include <time.h>
 #include <Python.h>
 
+
+/*----------------------------------------------------------------------
+     ____                 _        _                 
+    |  _ \  ___   ___ ___| |_ _ __(_)_ __   __ _ ___ 
+    | | | |/ _ \ / __/ __| __| '__| | '_ \ / _` / __|
+    | |_| | (_) | (__\__ \ |_| |  | | | | | (_| \__ \
+    |____/ \___/ \___|___/\__|_|  |_|_| |_|\__, |___/
+					   |___/     
+----------------------------------------------------------------------*/
+
 #include <docstrings.h>
 
 /*----------------------------------------------------------------------
@@ -90,22 +100,7 @@ static PyObject *cooldown_getter_normalized(Cooldown *self);
 static int cooldown_setter_normalized(Cooldown *self, PyObject *val, void *closure);
 
 /* Module init */
-PyMODINIT_FUNC PyInit_pgcooldown_(void);
-
-
-/*----------------------------------------------------------------------
-     ____                 _        _                 
-    |  _ \  ___   ___ ___| |_ _ __(_)_ __   __ _ ___ 
-    | | | |/ _ \ / __/ __| __| '__| | '_ \ / _` / __|
-    | |_| | (_) | (__\__ \ |_| |  | | | | | (_| \__ \
-    |____/ \___/ \___|___/\__|_|  |_|_| |_|\__, |___/
-					   |___/     
-----------------------------------------------------------------------*/
-
-#define COOLDOWN_RESET_DOCSTRING "reset the cooldown, optionally pass a new temperature.\n \n To reuse the cooldown, it can be reset at any time, optionally with a\n new duration.\n \n reset() also clears pause.\n \n Parameters\n ----------\n new: float = 0\n If not 0, set a new timeout value for the cooldown\n \n wrap: bool = False\n If `wrap` is `True` and the cooldown is cold, take the time\n overflown into account:\n \n e.g. the temperature of a Cooldown(10) after 12 seconds is `-2`.\n \n `cooldown.reset()` will set it back to 10.\n `cooldown.reset(wrap=True)` will set it to 8.\n \n Use `wrap=False` if you need a constant cooldown time.\n Use `wrap=True` if you have a global heartbeat.\n \n If the cooldown is still hot, `wrap` is ignored.\n \n Returns\n -------\n self\n Can be e.g. chained with `pause()`\n"
-#define COOLDOWN_PAUSE_DOCSTRING "Pause the cooldown.\n \n This function can be chained to directly pause from the constructor:\n \n cooldown.pause()\n cooldown = Cooldown(60).pause()\n \n Returns\n -------\n self\n For chaining.\n"
-#define COOLDOWN_START_DOCSTRING "Restart a paused cooldown.\n"
-#define COOLDOWN_ISPAUSED_DOCSTRING "Check if cooldown is paused.\n"
+PyMODINIT_FUNC PyInit__pgcooldown(void);
 
 
 /*----------------------------------------------------------------------
@@ -136,34 +131,34 @@ static PyNumberMethods cooldown_as_number = {
 
 /* Class level methods */
 static PyMethodDef cooldown_methods_[] = {
-    {"cold", (PyCFunction)cooldown_cold, METH_NOARGS, DOCSTRING_COOLDOWN_COLD},
-    {"hot", (PyCFunction)cooldown_hot, METH_NOARGS, DOCSTRING_COOLDOWN_HOT},
-    {"reset", (PyCFunction)cooldown_reset, METH_VARARGS | METH_KEYWORDS, DOCSTRING_COOLDOWN_RESET},
-    {"pause", (PyCFunction)cooldown_pause, METH_NOARGS, DOCSTRING_COOLDOWN_PAUSE},
+    {"cold", (PyCFunction)cooldown_cold, METH_NOARGS, NULL},
+    {"hot", (PyCFunction)cooldown_hot, METH_NOARGS, NULL},
+    {"reset", (PyCFunction)cooldown_reset, METH_VARARGS | METH_KEYWORDS, NULL},
+    {"pause", (PyCFunction)cooldown_pause, METH_NOARGS, NULL},
     {"start", (PyCFunction)cooldown_start, METH_NOARGS, NULL},
     {"is_paused", (PyCFunction)cooldown_is_paused, METH_NOARGS, NULL},
-    {"set_to", (PyCFunction)cooldown_set_to, METH_FASTCALL, DOCSTRING_COOLDOWN_SET_TO},
-    {"set_cold", (PyCFunction)cooldown_set_cold, METH_NOARGS, DOCSTRING_COOLDOWN_SET_COLD},
+    {"set_to", (PyCFunction)cooldown_set_to, METH_FASTCALL, NULL},
+    {"set_cold", (PyCFunction)cooldown_set_cold, METH_NOARGS, NULL},
     {NULL},
 };
 
 
 /* Properties */
 static PyGetSetDef cooldown_getset_[] = {
-    {"duration", (getter)cooldown_getter_duration, (setter)cooldown_setter_duration, DOCSTRING_COOLDOWN_DURATION, NULL},
-    {"wrap", (getter)cooldown_getter_wrap, (setter)cooldown_setter_wrap, DOCSTRING_COOLDOWN_WRAP, NULL},
-    {"paused", (getter)cooldown_getter_paused, (setter)cooldown_setter_paused, DOCSTRING_COOLDOWN_PAUSED, NULL},
-    {"temperature", (getter)cooldown_getter_temperature, (setter)cooldown_setter_temperature, DOCSTRING_COOLDOWN_TEMPERATURE, NULL},
-    {"remaining", (getter)cooldown_getter_remaining_, (setter)cooldown_setter_remaining, DOCSTRING_COOLDOWN_REMAINING, NULL},
-    {"normalized", (getter)cooldown_getter_normalized, (setter)cooldown_setter_normalized, DOCSTRING_COOLDOWN_NORMALIZED, NULL},
+    {"duration", (getter)cooldown_getter_duration, (setter)cooldown_setter_duration, NULL, NULL},
+    {"wrap", (getter)cooldown_getter_wrap, (setter)cooldown_setter_wrap, NULL, NULL},
+    {"paused", (getter)cooldown_getter_paused, (setter)cooldown_setter_paused, NULL, NULL},
+    {"temperature", (getter)cooldown_getter_temperature, (setter)cooldown_setter_temperature, NULL, NULL},
+    {"remaining", (getter)cooldown_getter_remaining_, (setter)cooldown_setter_remaining, NULL, NULL},
+    {"normalized", (getter)cooldown_getter_normalized, (setter)cooldown_setter_normalized, NULL, NULL},
     {NULL},
 };
 
 
 static PyTypeObject cooldown_type = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "pgcooldown_.Cooldown",
-    .tp_doc = DOCSTRING_MODULE,
+    .tp_name = "_pgcooldown.Cooldown",
+    .tp_doc = DOCSTRING_COOLDOWN,
     .tp_basicsize = sizeof(Cooldown),
     .tp_itemsize = 0,
     .tp_flags = Py_TPFLAGS_DEFAULT,
@@ -184,8 +179,8 @@ static PyTypeObject cooldown_type = {
 
 static PyModuleDef cooldown_module = {
     .m_base = PyModuleDef_HEAD_INIT,
-    .m_name = "pgcooldown_",
-    .m_doc = "The pgcooldown_ module that contains the Cooldown class",
+    .m_name = "_pgcooldown",
+    .m_doc = "The _pgcooldown module that contains the Cooldown class",
     .m_size = -1,
     .m_methods = pgcooldown_methods,
 };
@@ -550,7 +545,7 @@ static PyObject * cooldown_reset(Cooldown *self, PyObject *args, PyObject *kwarg
      * final duration must be set before applying the overflow.
      * See comments further down. */
 
-    int wrap = 0;
+    int wrap = self->wrap;
     double old_temperature, new_temperature;
     double new_duration = self->duration;
 
@@ -724,7 +719,7 @@ static int cooldown_setter_normalized(Cooldown *self, PyObject *val, void *closu
 
 ----------------------------------------------------------------------*/
 
-PyMODINIT_FUNC PyInit_pgcooldown_(void) {
+PyMODINIT_FUNC PyInit__pgcooldown(void) {
     PyObject *m;
 
     if (PyType_Ready(&cooldown_type) < 0)

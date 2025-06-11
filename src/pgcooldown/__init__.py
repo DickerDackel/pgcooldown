@@ -46,12 +46,14 @@ updated in the game loop.
 """
 
 import heapq
-import time
 import weakref
 
 from dataclasses import dataclass, field, InitVar
 
-from pgcooldown_ import Cooldown
+from _pgcooldown import Cooldown, lerp, invlerp, remap  # noqa: F401
+
+__all__ = ['Cooldown', 'lerp', 'invlerp', 'remap', 'LerpThing',
+           'AutoLerpThing', 'CronJob', 'CronD']
 
 
 @dataclass
