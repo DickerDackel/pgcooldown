@@ -234,7 +234,7 @@ static double timespec_to_double(struct timespec *t) {
 
 static void double_to_timespec(struct timespec *t, double val) {
     t->tv_sec = (time_t)val;
-    t->tv_nsec = (suseconds_t)((val - (int)val) * T_FRACTION_SCALE);
+    t->tv_nsec = (useconds_t)((val - (int)val) * T_FRACTION_SCALE);
 }
 
 
