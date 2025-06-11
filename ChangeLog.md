@@ -1,4 +1,9 @@
-# v0.3.0
+# v0.3.1
+
+The "Oh, totally forgot about type hints" release
+
+# v0.3.0 - unreleased
+
 - Port to C
 - API break, fuck it, we're < 1.0
   - Some methods have been moved back to properties
