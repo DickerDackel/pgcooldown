@@ -1,3 +1,9 @@
+# v0.3.0
+- Port to C
+- API break, fuck it, we're < 1.0
+  - Some methods have been moved back to properties
+- Cooldown supports the iterator protocol now
+
 # v0.2.14
 - Fixed type error when calling float(lerp_thing)
 
