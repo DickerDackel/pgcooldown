@@ -1,4 +1,4 @@
-#include <sys/time.h>
+#include <time.h>
 #include <Python.h>
 
 #include <docstrings.h>
@@ -13,10 +13,11 @@
 ----------------------------------------------------------------------*/
 
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define T_FRACTION_SCALE 1000000000.0
 
 typedef struct Cooldown {
     PyObject_HEAD
-    struct timeval t0;
+    struct timespec t0;
     double duration;
     int wrap;
     int paused;
@@ -30,11 +31,11 @@ static double lerp(double a, double b, double t);
 static double invlerp(double a, double b, double v);
 static double remap(double a0, double a1, double b0, double b1, double v);
 
-static double timeval_to_double(struct timeval *tv);
-static void double_to_timeval(struct timeval *tv, double val);
-static double diff_timeval(struct timeval *t0, struct timeval *t1);
-static void substract_timeval(struct timeval *t0, struct timeval *t1);
-static double current_delta(struct timeval *t0);
+static double timespec_to_double(struct timespec *t);
+static void double_to_timespec(struct timespec *t, double val);
+static double diff_timespec(struct timespec *t0, struct timespec *t1);
+static void substract_timespec(struct timespec *t0, struct timespec *t1);
+static double current_delta(struct timespec *t0);
 
 static double get_temperature(Cooldown *self);
 static void set_temperature(Cooldown *self, double val);
@@ -204,7 +205,7 @@ static PyModuleDef cooldown_module = {
 static void dump(char *msg, Cooldown *self) {
     printf("%s\n", msg);
     printf("    Cooldown object %p\n", self);
-    printf("    t0: %f\n", timeval_to_double(&self->t0));
+    printf("    t0: %f\n", timespec_to_double(&self->t0));
     printf("    duration: %f\n", self->duration);
     printf("    wrap: %d\n", self->wrap);
     printf("    paused: %d\n", self->paused);
@@ -226,34 +227,34 @@ static double remap(double a0, double a1, double b0, double b1, double v) {
 }
 
                                  
-static double timeval_to_double(struct timeval *tv) {
-    return tv->tv_sec + tv->tv_usec / 1000000.0;
+static double timespec_to_double(struct timespec *t) {
+    return t->tv_sec + t->tv_nsec / T_FRACTION_SCALE;
 }
 
 
-static void double_to_timeval(struct timeval *tv, double val) {
-    tv->tv_sec = (time_t)val;
-    tv->tv_usec = (suseconds_t)((val - (int)val) * 1000000);
+static void double_to_timespec(struct timespec *t, double val) {
+    t->tv_sec = (time_t)val;
+    t->tv_nsec = (suseconds_t)((val - (int)val) * T_FRACTION_SCALE);
 }
 
 
-static double diff_timeval(struct timeval *t0, struct timeval *t1) {
-    return t1->tv_sec - t0->tv_sec + (t1->tv_usec - t0->tv_usec) / 1000000.0;
+static double diff_timespec(struct timespec *t0, struct timespec *t1) {
+    return t1->tv_sec - t0->tv_sec + (t1->tv_nsec - t0->tv_nsec) / T_FRACTION_SCALE;
 }
 
 
-static void substract_timeval(struct timeval *t0, struct timeval *t1) {
+static void substract_timespec(struct timespec *t0, struct timespec *t1) {
     t0->tv_sec -= t1->tv_sec;
-    t0->tv_usec -= t1->tv_usec;
+    t0->tv_nsec -= t1->tv_nsec;
 }
 
 
-static double current_delta(struct timeval *t0) {
-    struct timeval now;
+static double current_delta(struct timespec *t0) {
+    struct timespec now;
 
-    gettimeofday(&now, NULL);
+    timespec_get(&now, TIME_UTC);
 
-    return diff_timeval(t0, &now);
+    return diff_timespec(t0, &now);
 }
 
 
@@ -265,16 +266,16 @@ static double get_temperature(Cooldown *self) {
 
 
 static void set_temperature(Cooldown *self, double val) {
-    struct timeval now, delta;
+    struct timespec now, delta;
 
     if (self->paused) {
 	self->remaining_ = val;
     } else {
-	gettimeofday(&now, NULL);
-	double_to_timeval(&delta, self->duration - val);
+	timespec_get(&now, TIME_UTC);
+	double_to_timespec(&delta, self->duration - val);
 
 	self->t0.tv_sec = now.tv_sec - delta.tv_sec;
-	self->t0.tv_usec = now.tv_usec - delta.tv_usec;
+	self->t0.tv_nsec = now.tv_nsec - delta.tv_nsec;
     }
 }
 
@@ -398,7 +399,7 @@ static int cooldown___init__(Cooldown *self, PyObject *args, PyObject *kwargs) {
 	source = (Cooldown *)duration_or_cooldown;
 
 	self->t0.tv_sec = source->t0.tv_sec;
-	self->t0.tv_usec = source->t0.tv_usec;
+	self->t0.tv_nsec = source->t0.tv_nsec;
 	self->duration = source->duration;
 	self->wrap = source->wrap;
 	self->paused = source->paused;
