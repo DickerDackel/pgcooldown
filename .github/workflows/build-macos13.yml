@@ -5,7 +5,7 @@ on: [workflow_dispatch]
 jobs:
   build_wheels:
     env:
-      CIBW_BUILD: "cp313-*"
+      CIBW_BUILD: "cp313-macosx_x86_64"
       
     runs-on: ${{ matrix.os }}
     strategy:
