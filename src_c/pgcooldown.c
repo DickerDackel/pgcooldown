@@ -90,7 +90,7 @@ static PyObject *cooldown_getter_normalized(Cooldown *self);
 static int cooldown_setter_normalized(Cooldown *self, PyObject *val, void *closure);
 
 /* Module init */
-PyMODINIT_FUNC PyInit_pgcooldown_(void);
+PyMODINIT_FUNC PyInit__pgcooldown(void);
 
 
 /*----------------------------------------------------------------------
@@ -162,7 +162,7 @@ static PyGetSetDef cooldown_getset_[] = {
 
 static PyTypeObject cooldown_type = {
     .ob_base = PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "pgcooldown_.Cooldown",
+    .tp_name = "_pgcooldown.Cooldown",
     .tp_doc = DOCSTRING_MODULE,
     .tp_basicsize = sizeof(Cooldown),
     .tp_itemsize = 0,
@@ -184,8 +184,8 @@ static PyTypeObject cooldown_type = {
 
 static PyModuleDef cooldown_module = {
     .m_base = PyModuleDef_HEAD_INIT,
-    .m_name = "pgcooldown_",
-    .m_doc = "The pgcooldown_ module that contains the Cooldown class",
+    .m_name = "_pgcooldown",
+    .m_doc = "The _pgcooldown module that contains the Cooldown class",
     .m_size = -1,
     .m_methods = pgcooldown_methods,
 };
@@ -724,7 +724,7 @@ static int cooldown_setter_normalized(Cooldown *self, PyObject *val, void *closu
 
 ----------------------------------------------------------------------*/
 
-PyMODINIT_FUNC PyInit_pgcooldown_(void) {
+PyMODINIT_FUNC PyInit__pgcooldown(void) {
     PyObject *m;
 
     if (PyType_Ready(&cooldown_type) < 0)
