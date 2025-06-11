@@ -51,7 +51,7 @@ import weakref
 
 from dataclasses import dataclass, field, InitVar
 
-from _pgcooldown import Cooldown
+from _pgcooldown import Cooldown, lerp, invlerp, remap
 
 
 @dataclass
