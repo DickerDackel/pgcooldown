@@ -1,6 +1,16 @@
 #include <time.h>
 #include <Python.h>
 
+
+/*----------------------------------------------------------------------
+     ____                 _        _                 
+    |  _ \  ___   ___ ___| |_ _ __(_)_ __   __ _ ___ 
+    | | | |/ _ \ / __/ __| __| '__| | '_ \ / _` / __|
+    | |_| | (_) | (__\__ \ |_| |  | | | | | (_| \__ \
+    |____/ \___/ \___|___/\__|_|  |_|_| |_|\__, |___/
+					   |___/     
+----------------------------------------------------------------------*/
+
 #include <docstrings.h>
 
 /*----------------------------------------------------------------------
@@ -91,21 +101,6 @@ static int cooldown_setter_normalized(Cooldown *self, PyObject *val, void *closu
 
 /* Module init */
 PyMODINIT_FUNC PyInit__pgcooldown(void);
-
-
-/*----------------------------------------------------------------------
-     ____                 _        _                 
-    |  _ \  ___   ___ ___| |_ _ __(_)_ __   __ _ ___ 
-    | | | |/ _ \ / __/ __| __| '__| | '_ \ / _` / __|
-    | |_| | (_) | (__\__ \ |_| |  | | | | | (_| \__ \
-    |____/ \___/ \___|___/\__|_|  |_|_| |_|\__, |___/
-					   |___/     
-----------------------------------------------------------------------*/
-
-#define COOLDOWN_RESET_DOCSTRING "reset the cooldown, optionally pass a new temperature.\n \n To reuse the cooldown, it can be reset at any time, optionally with a\n new duration.\n \n reset() also clears pause.\n \n Parameters\n ----------\n new: float = 0\n If not 0, set a new timeout value for the cooldown\n \n wrap: bool = False\n If `wrap` is `True` and the cooldown is cold, take the time\n overflown into account:\n \n e.g. the temperature of a Cooldown(10) after 12 seconds is `-2`.\n \n `cooldown.reset()` will set it back to 10.\n `cooldown.reset(wrap=True)` will set it to 8.\n \n Use `wrap=False` if you need a constant cooldown time.\n Use `wrap=True` if you have a global heartbeat.\n \n If the cooldown is still hot, `wrap` is ignored.\n \n Returns\n -------\n self\n Can be e.g. chained with `pause()`\n"
-#define COOLDOWN_PAUSE_DOCSTRING "Pause the cooldown.\n \n This function can be chained to directly pause from the constructor:\n \n cooldown.pause()\n cooldown = Cooldown(60).pause()\n \n Returns\n -------\n self\n For chaining.\n"
-#define COOLDOWN_START_DOCSTRING "Restart a paused cooldown.\n"
-#define COOLDOWN_ISPAUSED_DOCSTRING "Check if cooldown is paused.\n"
 
 
 /*----------------------------------------------------------------------
