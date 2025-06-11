@@ -545,7 +545,7 @@ static PyObject * cooldown_reset(Cooldown *self, PyObject *args, PyObject *kwarg
      * final duration must be set before applying the overflow.
      * See comments further down. */
 
-    int wrap = 0;
+    int wrap = self->wrap;
     double old_temperature, new_temperature;
     double new_duration = self->duration;
 
