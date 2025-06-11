@@ -1,4 +1,3 @@
-#include <sys/param.h>
 #include <sys/time.h>
 #include <Python.h>
 
@@ -12,6 +11,8 @@
     |____/ \___|_| |_|_| |_|_|\__|_|\___/|_| |_|___/
                                                 
 ----------------------------------------------------------------------*/
+
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 typedef struct Cooldown {
     PyObject_HEAD
@@ -602,7 +603,6 @@ static PyObject * cooldown_is_paused(Cooldown *self) {
 
 
 static PyObject * cooldown_set_to(Cooldown *self, PyObject *const *args, Py_ssize_t nargs) {
-    fprintf(stderr, "set_to(): Deprecation warning: Please assign to duration instead.");
     if (nargs != 1)
 	return NULL;
 
@@ -619,7 +619,6 @@ static PyObject * cooldown_set_to(Cooldown *self, PyObject *const *args, Py_ssiz
 
 
 static PyObject * cooldown_set_cold(Cooldown *self) {
-    fprintf(stderr, "set_cold: Deprecation warning: Please assign to temperature instead.");
     set_cold(self, 1);
 
     Py_RETURN_NONE;
