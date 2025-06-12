@@ -1,8 +1,4 @@
-# v0.3.1
-
-The "Oh, totally forgot about type hints" release
-
-# v0.3.0 - unreleased
+# v0.3.2 - unreleased
 
 - Port to C
 - API break, fuck it, we're < 1.0

@@ -1,2 +1,3 @@
 graft include
 graft support
+include ChangeLog.md

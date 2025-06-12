@@ -1,7 +1,7 @@
 [project]
 name = "pgcooldown"
 description = "A cooldown/counter class to wait for stuff in games"
-version = "0.3.1"
+version = "0.3.2"
 readme = "README.md"
 
 authors = [
@@ -11,10 +11,12 @@ authors = [
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
-    "MIT License",
     "Topic :: Games/Entertainment",
     "Topic :: Software Development :: Libraries :: pygame",
 ]
+
+license = "MIT"
+license-files = ["LICENSE"]
 
 dependencies = [ ]
 
