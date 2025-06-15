@@ -74,7 +74,7 @@ class LerpThing:
     ----------
     vt0,
     vt1: [int | float]
-        Values at t == 0 and t == 1
+        The endpoints of the lerp at `t == 0` and `t == 1`
 
     duration: Cooldown
         The length of the lerp.  This duration is mapped onto the range 0 - 1
@@ -148,7 +148,7 @@ class LerpThing:
     def __ge__(self, other): return self() >= other  # noqa: E704
 
     def finished(self):
-        """Just a conveninence wrapper for self.interval.cold"""
+        """Just a conveninence wrapper for self.duration.cold"""
         return self.duration.cold()
 
 
@@ -165,22 +165,24 @@ class AutoLerpThing:
     advantages over a property, except not having so much boilerplate in your
     class if you have multiple LerpThings in it.
 
-    Use it like this:
-        class SomeClass:
+    Note 2
+    ----
+    In contrast to a normal LerpThing, you access the `AutoLerpThing`
+    like a normal attribute, not like a method call.
 
-            usage1 = AutoLerpThing()
-            usage2 = AutoLerpThing()
-            usage3 = AutoLerpThing()
+    Use it like this:
+
+        class Asteroid:
+            angle = AutoLerpThing()
 
             def __init__(self):
-                self.usage1 = 7
-                self.usage2 = (0, 360, 5)
-                self.usage3 = LerpThing(0, 360, 5)
+                self.angle = (0, 360, 10)  # Will do one full rotation over 10 seconds
 
-        x = SomeClass()
-        print(x.lerp)
-        sleep(duration / 2)
-        print(x.lerp)
+        asteroid = Asteroid()
+        asteroid.angle
+            --> 107.43224363999998
+        asteroid.angle
+            --> 129.791468736
 
     """
     def __set_name__(self, obj, name):
@@ -234,6 +236,8 @@ class Cronjob:
 
 class CronD:
     """A job manager class.
+A job manager class named after the unix scheduling daemon.
+A job manager class named after the unix scheduling daemon.
 
     In the spirit of unix's crond, this class can be used to run functions
     after a cooldown once or repeatedly.
