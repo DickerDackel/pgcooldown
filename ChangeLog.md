@@ -1,3 +1,7 @@
+# v0.3.3
+
+- Changed the overshoot behaviour of wrap
+
 # v0.3.2 - unreleased
 
 - Port to C

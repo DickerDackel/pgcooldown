@@ -73,7 +73,7 @@ def test_reset():
 
 def test_wrap():
     c = Cooldown(1)
-    sleep(1.5)
+    sleep(2.5)
     assert c.remaining == 0
     assert c.temperature < 0
     c.reset(wrap=True)

@@ -97,11 +97,6 @@ the default configuration of the cooldown instance.
     c0.temperature, c1.temperature
         --> 2.999748423 4.999999169
 
-IMPORTANT: wrapping is meant to keep precise timing over a long
-period of time, while dealing with load peaks.  If you constantly
-overshoot, you won't be able to catch back up to the full
-cooldown time.  Your overshoot errors will accumulate.
-
 A cooldown can be used as an iterator, returning the time
 remaining.
 

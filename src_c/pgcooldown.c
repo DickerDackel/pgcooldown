@@ -1,3 +1,4 @@
+#include <math.h>
 #include <time.h>
 #include <Python.h>
 
@@ -561,9 +562,9 @@ static PyObject * cooldown_reset(Cooldown *self, PyObject *args, PyObject *kwarg
     } else {
 	old_temperature = get_temperature(self);
 
-	new_temperature = old_temperature > 0 || !wrap
+	new_temperature = old_temperature > 0
 	    ? new_duration
-	    : self->duration + old_temperature;
+	    : fmod(old_temperature, new_duration) + new_duration;
     }
 
     /* Only now overwrite! */
