@@ -124,15 +124,20 @@ class LerpThing:
         """Return the current lerped value"""
         # Note: Using cold precalculated instead of calling it twice, gave a
         # 30% speed increase!
-        cold = self.duration.cold()
-        if cold and self.repeat:
+        #
+        # Note 2: Using both cold() on top and `duration.normalized` further
+        # below created a race condition. All timing data needs to be fetched
+        # atomically on top
+
+        t = self.duration.normalized
+        if t >= 1.0 and self.repeat:
             if self.repeat == 2:
                 self.vt0, self.vt1 = self.vt1, self.vt0
             self.duration.reset(wrap=True)
-            cold = False
+            t = self.duration.normalized
 
-        if not cold:
-            return (self.vt1 - self.vt0) * self.ease(self.duration.normalized) + self.vt0
+        if t < 1.0:
+            return lerp(self.vt0, self.vt1, self.ease(t))
 
         return self.vt1
 

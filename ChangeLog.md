@@ -1,3 +1,7 @@
+# v0.3.5
+
+- Fixed a race condition in LerpThing
+
 # v0.3.3
 
 - Changed the overshoot behaviour of wrap
