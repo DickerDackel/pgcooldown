@@ -50,7 +50,7 @@ import weakref
 
 from dataclasses import dataclass, field, InitVar
 
-from _pgcooldown import Cooldown, lerp, invlerp, remap  # noqa: F401
+from pgcooldown._pgcooldown import Cooldown, lerp, invlerp, remap  # noqa: F401
 
 __all__ = ['Cooldown', 'lerp', 'invlerp', 'remap', 'LerpThing',
            'AutoLerpThing', 'CronJob', 'CronD']
