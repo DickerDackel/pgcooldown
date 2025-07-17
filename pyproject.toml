@@ -18,7 +18,9 @@ classifiers = [
 license = "MIT"
 license-files = ["LICENSE"]
 
-dependencies = [ ]
+dependencies = [
+    "rpeasings"
+]
 
 [project.urls]
 homepage = "https://github.com/dickerdackel/pgcooldown"
