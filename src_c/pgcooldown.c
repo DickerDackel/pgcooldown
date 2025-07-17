@@ -70,7 +70,6 @@ static void cooldown_dealloc(Cooldown *self);
 /* Class methods */
 static PyObject * cooldown_repr(Cooldown *self);
 static PyObject * cooldown___call__(Cooldown *self);
-static PyObject * cooldown___hash__(Cooldown *self);
 static int cooldown___bool__(Cooldown *self);
 static PyObject * cooldown___int__(Cooldown *self);
 static PyObject * cooldown___float__(Cooldown *self);
@@ -134,12 +133,12 @@ static PyNumberMethods cooldown_as_number = {
 static PyMethodDef cooldown_methods_[] = {
     {"cold", (PyCFunction)cooldown_cold, METH_NOARGS, NULL},
     {"hot", (PyCFunction)cooldown_hot, METH_NOARGS, NULL},
-    {"reset", (PyCFunction)cooldown_reset, METH_VARARGS | METH_KEYWORDS, NULL},
-    {"pause", (PyCFunction)cooldown_pause, METH_NOARGS, NULL},
-    {"start", (PyCFunction)cooldown_start, METH_NOARGS, NULL},
     {"is_paused", (PyCFunction)cooldown_is_paused, METH_NOARGS, NULL},
-    {"set_to", (PyCFunction)cooldown_set_to, METH_FASTCALL, NULL},
+    {"pause", (PyCFunction)cooldown_pause, METH_NOARGS, NULL},
+    {"reset", (PyCFunction)cooldown_reset, METH_VARARGS | METH_KEYWORDS, NULL},
     {"set_cold", (PyCFunction)cooldown_set_cold, METH_NOARGS, NULL},
+    {"set_to", (PyCFunction)cooldown_set_to, METH_FASTCALL, NULL},
+    {"start", (PyCFunction)cooldown_start, METH_NOARGS, NULL},
     {NULL},
 };
 
@@ -147,11 +146,11 @@ static PyMethodDef cooldown_methods_[] = {
 /* Properties */
 static PyGetSetDef cooldown_getset_[] = {
     {"duration", (getter)cooldown_getter_duration, (setter)cooldown_setter_duration, NULL, NULL},
-    {"wrap", (getter)cooldown_getter_wrap, (setter)cooldown_setter_wrap, NULL, NULL},
-    {"paused", (getter)cooldown_getter_paused, (setter)cooldown_setter_paused, NULL, NULL},
-    {"temperature", (getter)cooldown_getter_temperature, (setter)cooldown_setter_temperature, NULL, NULL},
-    {"remaining", (getter)cooldown_getter_remaining_, (setter)cooldown_setter_remaining, NULL, NULL},
     {"normalized", (getter)cooldown_getter_normalized, (setter)cooldown_setter_normalized, NULL, NULL},
+    {"paused", (getter)cooldown_getter_paused, (setter)cooldown_setter_paused, NULL, NULL},
+    {"remaining", (getter)cooldown_getter_remaining_, (setter)cooldown_setter_remaining, NULL, NULL},
+    {"temperature", (getter)cooldown_getter_temperature, (setter)cooldown_setter_temperature, NULL, NULL},
+    {"wrap", (getter)cooldown_getter_wrap, (setter)cooldown_setter_wrap, NULL, NULL},
     {NULL},
 };
 
@@ -441,11 +440,6 @@ static PyObject * cooldown_repr(Cooldown *self) {
 
 static PyObject * cooldown___call__(Cooldown *self) {
     return PyFloat_FromDouble(get_remaining(self));
-}
-
-
-static PyObject * cooldown___hash__(Cooldown *self) {
-    return PyLong_FromVoidPtr(self);
 }
 
 
