@@ -1,3 +1,10 @@
+# v0.3.6
+- New lib location
+- Mostly fixed stubs, not 100% yet though
+- Removed unused functions
+- rpeasings dependency
+- typos
+
 # v0.3.5
 
 - Fixed a race condition in LerpThing
