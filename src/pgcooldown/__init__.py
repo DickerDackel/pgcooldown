@@ -165,8 +165,10 @@ class LerpThing:
     def __ge__(self, other): return self() >= other  # noqa: E704
 
     def finished(self):
-        """Just a conveninence wrapper for self.duration.cold"""
-        return self.duration.cold()
+        """Check if the LerpThing is done."""
+        cold = self.duration.cold()
+        return ((cold and not self.repeat)
+                or (cold and self.repeat and self.loops))
 
 
 class AutoLerpThing:
