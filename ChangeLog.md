@@ -1,3 +1,6 @@
+# v0.3.9
+- Another `finished` problem that was missed by the tests
+
 # v0.3.8
 - Fixed `finished()` error with looping
 - fixed test error for Cooldown.duration
