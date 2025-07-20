@@ -136,15 +136,15 @@ def test_pause():
 def test_normalized():
     c = Cooldown(4)
     # Multiply by 100 gives us more leeway to cope with load impact
-    assert approx(c.normalized * 100, abs=0.1) == 0, c.normalized
+    assert approx(c.normalized, abs=0.1) == 0.0, c.normalized
     sleep(1)
-    assert approx(c.normalized * 100, abs=0.1) == 25, c.normalized
+    assert approx(c.normalized, abs=0.1) == 0.25, c.normalized
     sleep(1)
-    assert approx(c.normalized * 100, abs=0.1) == 50, c.normalized
+    assert approx(c.normalized, abs=0.1) == 0.50, c.normalized
     sleep(1)
-    assert approx(c.normalized * 100, abs=0.1) == 75, c.normalized
+    assert approx(c.normalized, abs=0.1) == 0.75, c.normalized
     sleep(1)
-    assert approx(c.normalized * 100, abs=0.1) == 100, c.normalized
+    assert approx(c.normalized, abs=0.1) == 1.0, c.normalized
     assert c.cold()
 
 
