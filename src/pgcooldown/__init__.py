@@ -168,7 +168,7 @@ class LerpThing:
         """Check if the LerpThing is done."""
         cold = self.duration.cold()
         return ((cold and not self.repeat)
-                or (cold and self.repeat and self.loops))
+                or (cold and self.repeat and not self.loops))
 
 
 class AutoLerpThing:
