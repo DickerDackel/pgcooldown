@@ -1,3 +1,7 @@
+# v0.3.8
+- Fixed `finished()` error with looping
+- fixed test error for Cooldown.duration
+
 # v0.3.7
 - Limited repeats for LerpThing
 
