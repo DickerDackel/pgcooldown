@@ -1,3 +1,6 @@
+# v0.3.7
+- Limited repeats for LerpThing
+
 # v0.3.6
 - New lib location
 - Mostly fixed stubs, not 100% yet though

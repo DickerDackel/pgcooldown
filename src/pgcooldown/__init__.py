@@ -96,15 +96,20 @@ class LerpThing:
             2: Bounce back and forth.  Note, that bounce back is implemented by
                swapping vt0 and vt1.
 
+    loops: int = -1
+        Limit the number of loops
+
     """
     vt0: float
     vt1: float
     duration: InitVar[Cooldown | float]
     ease: callable = lambda x: x
     repeat: int = 0
+    loops: int = -1
 
     def __post_init__(self, duration):
         self.duration = duration if isinstance(duration, Cooldown) else Cooldown(duration)
+        self.loops -= 1
 
         # This is a special case.  We return vt1 when the cooldown is cold, but
         # if duration is 0, we're already cold right from the start, so it's
@@ -130,9 +135,16 @@ class LerpThing:
         # atomically on top
 
         t = self.duration.normalized
+
         if t >= 1.0 and self.repeat:
+            if  self.loops == 0:
+                return self.vt1
+
+            self.loops -= 1
+
             if self.repeat == 2:
                 self.vt0, self.vt1 = self.vt1, self.vt0
+
             self.duration.reset(wrap=True)
             t = self.duration.normalized
 

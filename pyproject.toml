@@ -1,7 +1,7 @@
 [project]
 name = "pgcooldown"
 description = "A cooldown/counter class to wait for stuff in games"
-version = "0.3.6"
+version = "0.3.7"
 readme = "README.md"
 
 authors = [

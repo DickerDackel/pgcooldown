@@ -38,6 +38,20 @@ def test_repeat():
     assert approx(lt(), 0.01) == 0.8
 
 
+def test_loops():
+    lt = LerpThing(vt0=0, vt1=1, duration=1, repeat=2, loops=2)
+    sleep(0.5)
+    assert approx(lt(), abs=0.01) == 0.5
+    sleep(0.5)
+    assert approx(lt(), abs=0.01) == 1
+    sleep(0.5)
+    assert approx(lt(), abs=0.01) == 0.5
+    sleep(0.5)
+    assert approx(lt(), abs=0.01) == 0
+    sleep(0.25)
+    assert approx(lt(), abs=0.01) == 0
+
+
 def test_bounce():
     lt = LerpThing(vt0=1, vt1=0, duration=1, repeat=2)
     sleep(1.2)
