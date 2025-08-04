@@ -1,3 +1,7 @@
+# v0.3.10
+- Moved type hints from stub to python where possible.
+- I hate pyi files!
+
 # v0.3.9
 - Another `finished` problem that was missed by the tests
 
