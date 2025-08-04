@@ -1,4 +1,4 @@
-# v0.3.10
+# v0.3.11
 - Moved type hints from stub to python where possible.
 - I hate pyi files!
 
