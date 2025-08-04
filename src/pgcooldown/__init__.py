@@ -48,7 +48,10 @@ updated in the game loop.
 import heapq
 import weakref
 
+from weakref import ReferenceType
+
 from dataclasses import dataclass, field, InitVar
+from typing import Callable, Self, Type
 
 from pgcooldown._pgcooldown import Cooldown, lerp, invlerp, remap  # noqa: F401
 
@@ -103,11 +106,11 @@ class LerpThing:
     vt0: float
     vt1: float
     duration: InitVar[Cooldown | float]
-    ease: callable = lambda x: x
+    ease: Callable[[float], float] = lambda x: x
     repeat: int = 0
     loops: int = -1
 
-    def __post_init__(self, duration):
+    def __post_init__(self, duration: Cooldown | float) -> None:
         self.duration = duration if isinstance(duration, Cooldown) else Cooldown(duration)
         self.loops -= 1
 
@@ -125,7 +128,7 @@ class LerpThing:
         if duration == 0:
             self.vt1 = self.vt0
 
-    def __call__(self):
+    def __call__(self) -> float:
         """Return the current lerped value"""
         # Note: Using cold precalculated instead of calling it twice, gave a
         # 30% speed increase!
@@ -153,25 +156,25 @@ class LerpThing:
 
         return self.vt1
 
-    def __hash__(self): id(self)  # noqa: E704
-    def __bool__(self): return bool(self())  # noqa: E704
-    def __int__(self): return int(self())  # noqa: E704
-    def __float__(self): return float(self())  # noqa: E704
-    def __lt__(self, other): return self() < other  # noqa: E704
-    def __le__(self, other): return self() <= other  # noqa: E704
-    def __eq__(self, other): return self() == other  # noqa: E704
-    def __ne__(self, other): return self() != other  # noqa: E704
-    def __gt__(self, other): return self() > other  # noqa: E704
-    def __ge__(self, other): return self() >= other  # noqa: E704
+    def __hash__(self) -> int: return id(self)  # noqa: E704
+    def __bool__(self) -> bool: return bool(self())  # noqa: E704
+    def __int__(self) -> int: return int(self())  # noqa: E704
+    def __float__(self) -> float: return float(self())  # noqa: E704
+    def __lt__(self, other: object) -> bool: return self() < other  # noqa: E704
+    def __le__(self, other: object) -> bool: return self() <= other  # noqa: E704
+    def __eq__(self, other: object) -> bool: return self() == other  # noqa: E704
+    def __ne__(self, other: object) -> bool: return self() != other  # noqa: E704
+    def __ge__(self, other: object) -> bool: return self() >= other  # noqa: E704
+    def __gt__(self, other: object) -> bool: return self() > other  # noqa: E704
 
-    def finished(self):
+    def finished(self) -> bool:
         """Check if the LerpThing is done."""
         cold = self.duration.cold()
         return ((cold and not self.repeat)
                 or (cold and self.repeat and not self.loops))
 
 
-class AutoLerpThing:
+class AutoLerpThing(float):
     """A descriptor class for LerpThing.
 
     If an attribute could either be a constant value, or a LerpThing, use this
@@ -204,10 +207,10 @@ class AutoLerpThing:
             --> 129.791468736
 
     """
-    def __set_name__(self, obj, name):
+    def __set_name__(self, obj: object, name: str) -> None:
         self.attrib = f'__lerpthing_{name}'
 
-    def __set__(self, obj, val):
+    def __set__(self, obj: float, val: float) -> None:
         if isinstance(val, (int, float)):
             obj.__setattr__(self.attrib, val)
         elif isinstance(val, LerpThing):
@@ -217,7 +220,7 @@ class AutoLerpThing:
         else:
             raise TypeError(f'{self.attrib} must be either a number or a LerpThing')
 
-    def __get__(self, obj, parent):
+    def __get__(self, obj: float, objtype: Type[float]) -> Self | None | float:
         if obj is None:
             return self
 
@@ -245,10 +248,10 @@ class Cronjob:
 
     """
     cooldown: Cooldown | float
-    task: callable = field(compare=False)
-    repeat: False = field(compare=False)
+    task: Callable = field(compare=False)
+    repeat: bool = field(compare=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if not isinstance(self.cooldown, Cooldown):
             self.cooldown = Cooldown(self.cooldown)
 
@@ -278,10 +281,10 @@ A job manager class named after the unix scheduling daemon.
     heap: list[Cronjob]
 
     """
-    def __init__(self):
+    def __init__(self) -> None:
         self.heap = []
 
-    def add(self, cooldown, task, repeat=False):
+    def add(self, cooldown: Cooldown, task: Callable, repeat: bool = False) -> ReferenceType[Cronjob]:
         """Schedule a new task.
 
         Parameters
@@ -305,7 +308,7 @@ A job manager class named after the unix scheduling daemon.
         heapq.heappush(self.heap, cj)
         return weakref.ref(cj)
 
-    def remove(self, cid):
+    def remove(self, cid: ReferenceType[Cronjob]) -> None:
         """Remove a pending or repeating job.
 
         Does nothing if the job is already finished.
@@ -323,7 +326,7 @@ A job manager class named after the unix scheduling daemon.
         if cid is not None:
             self.heap.remove(cid())
 
-    def update(self):
+    def update(self) -> None:
         """Run all jobs that are ready to run.
 
         Will reschedule jobs that have `repeat = True` set.
