@@ -1,3 +1,7 @@
+# v0.3.12
+
+Give LerpThing its own reset
+
 # v0.3.11
 - Moved type hints from stub to python where possible.
 - I hate pyi files!
