@@ -1,6 +1,8 @@
 # v0.3.12
 
-Give LerpThing its own reset
+- Give LerpThing its own reset()
+- repeat is now controllable with an enum LTRepeat
+
 
 # v0.3.11
 - Moved type hints from stub to python where possible.
