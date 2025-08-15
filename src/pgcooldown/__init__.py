@@ -113,6 +113,7 @@ class LerpThing:
     def __post_init__(self, duration: Cooldown | float) -> None:
         self.duration = duration if isinstance(duration, Cooldown) else Cooldown(duration)
         self.loops -= 1
+        self._base_loops = self.loops
 
         # This is a special case.  We return vt1 when the cooldown is cold, but
         # if duration is 0, we're already cold right from the start, so it's
@@ -172,6 +173,17 @@ class LerpThing:
         cold = self.duration.cold()
         return ((cold and not self.repeat)
                 or (cold and self.repeat and not self.loops))
+
+    def reset(self, *args, repeat=None, loops=None, **kwargs) -> None:
+        if repeat is not None:
+            self.repeat = repeat
+
+        if loops is not None:
+            self._base_loops = loops - 1
+
+        self.loops = self._base_loops
+
+        self.duration.reset(*args, **kwargs)
 
 
 class AutoLerpThing(float):

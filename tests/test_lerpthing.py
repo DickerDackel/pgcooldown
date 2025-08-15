@@ -100,6 +100,15 @@ def test_descriptor():
     assert x.lt == 10
 
 
+def test_reset():
+    lt = LerpThing(0, 10, 10, repeat=42, loops=84)
+    lt.reset(17, repeat=2, loops=1)
+    assert lt.duration.duration == 17
+    assert lt.repeat == 2
+    assert lt.loops == 0
+    ...
+
+
 if __name__ == '__main__':
     test_cooldown()
     test_call_is_v()
