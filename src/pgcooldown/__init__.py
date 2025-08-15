@@ -174,7 +174,17 @@ class LerpThing:
         return ((cold and not self.repeat)
                 or (cold and self.repeat and not self.loops))
 
-    def reset(self, *args, repeat=None, loops=None, **kwargs) -> None:
+    def reset(self, duration, repeat=None, loops=None, **kwargs) -> None:
+        """Reset the LerpThing.
+
+        Calling it without arguments just resets the timer and loop counter.
+        The arguments are to additionally reconfiguring it.
+
+        Parameters
+        ----------
+        See class documentation above.
+        """
+
         if repeat is not None:
             self.repeat = repeat
 
