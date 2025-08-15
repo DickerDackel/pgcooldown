@@ -45,6 +45,7 @@ updated in the game loop.
 
 """
 
+from enum import IntEnum
 import heapq
 import weakref
 
@@ -57,6 +58,19 @@ from pgcooldown._pgcooldown import Cooldown, lerp, invlerp, remap  # noqa: F401
 
 __all__ = ['Cooldown', 'lerp', 'invlerp', 'remap', 'LerpThing',
            'AutoLerpThing', 'CronJob', 'CronD']
+
+
+class LTRepeat(IntEnum):
+    """Repeat mode
+
+    OFF - Don't repeat the LerpThing except when reset
+    LOOP - Reapeat the LerpThing from start to endpoints
+    BOUNCE - Bounce the LerpThing from start to end to start...
+    """
+    OFF = 0
+    LOOP = 1
+    BOUNCE = 2
+
 
 
 @dataclass
@@ -91,23 +105,25 @@ class LerpThing:
     ease: callable = lambda x: x
         An optional easing function to put over t
 
-    repeat: int = 0
+    repeat: LTRepeat = LTRepeat.OFF
         After the duration has passed, how to proceed?
 
-            0: Don't repeat, just stop transmogrifying
-            1: Reset and repeat from start
-            2: Bounce back and forth.  Note, that bounce back is implemented by
-               swapping vt0 and vt1.
+            LTRepeat.OFF:    Don't repeat, just stop transmogrifying
+            LTRepeat.LOOP:   Reset and repeat from start
+            LTRepeat.BOUNCE: Bounce back and forth.  Note, that bounce
+                             back is implemented by swapping vt0 and vt1.
+
+        This enum is new, the old values 0, 1, 2 still work and will continue to do so.
 
     loops: int = -1
-        Limit the number of loops
+        Limit the number of loops.  Values < 0 won't repeat (at least not until the int wraps)
 
     """
     vt0: float
     vt1: float
     duration: InitVar[Cooldown | float]
     ease: Callable[[float], float] = lambda x: x
-    repeat: int = 0
+    repeat: LTRepeat | int | None = LTRepeat.OFF
     loops: int = -1
 
     def __post_init__(self, duration: Cooldown | float) -> None:
@@ -141,12 +157,12 @@ class LerpThing:
         t = self.duration.normalized
 
         if t >= 1.0 and self.repeat:
-            if  self.loops == 0:
+            if self.loops == 0:
                 return self.vt1
 
             self.loops -= 1
 
-            if self.repeat == 2:
+            if self.repeat == LTRepeat.BOUNCE:
                 self.vt0, self.vt1 = self.vt1, self.vt0
 
             self.duration.reset(wrap=True)
@@ -174,7 +190,7 @@ class LerpThing:
         return ((cold and not self.repeat)
                 or (cold and self.repeat and not self.loops))
 
-    def reset(self, duration, repeat=None, loops=None, **kwargs) -> None:
+    def reset(self, duration: float  | None = None, repeat: LTRepeat | int | None = None, loops: int | None = None) -> None:
         """Reset the LerpThing.
 
         Calling it without arguments just resets the timer and loop counter.
@@ -193,7 +209,10 @@ class LerpThing:
 
         self.loops = self._base_loops
 
-        self.duration.reset(*args, **kwargs)
+        if duration is not None:
+            self.duration.reset(duration)
+        else:
+            self.duration.reset()
 
 
 class AutoLerpThing(float):
