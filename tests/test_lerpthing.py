@@ -120,6 +120,21 @@ def test_reset():
     ...
 
 
+def test_iterable():
+    lt = LerpThing(0, 1, 1)
+    assert approx(next(lt), abs=0.01) == 0
+
+
+def test_iterator():
+    for i, lt in zip(range(99), LerpThing(0, 1, 1)):
+        print(f'{i=}  {lt=}')
+        assert approx(lt, abs=0.01) == i / 10, f'{lt} vs {i / 10} ({i})'
+        sleep(0.1)
+
+    print(f'OUTSIDE: {i=}  {lt=}')
+    assert lt == 1, f'{lt} vs {i / 10} ({i})'
+
+
 if __name__ == '__main__':
     test_cooldown()
     test_call_is_v()
@@ -129,3 +144,5 @@ if __name__ == '__main__':
     test_easing()
     test_finished()
     test_descriptor()
+    test_iterable()
+    test_iterator()

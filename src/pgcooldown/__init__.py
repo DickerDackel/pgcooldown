@@ -184,6 +184,14 @@ class LerpThing:
     def __ge__(self, other: object) -> bool: return self() >= other  # noqa: E704
     def __gt__(self, other: object) -> bool: return self() > other  # noqa: E704
 
+    def __next__(self):
+        return self.__call__()
+
+    def __iter__(self):
+        while True:
+            if self.finished(): break
+            yield self.__call__()
+
     def finished(self) -> bool:
         """Check if the LerpThing is done."""
         cold = self.duration.cold()
