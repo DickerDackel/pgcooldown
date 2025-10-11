@@ -117,7 +117,6 @@ def test_reset():
     assert lt.duration.duration == 17
     assert lt.repeat == LTRepeat.BOUNCE
     assert lt.loops == 0
-    ...
 
 
 def test_iterable():
@@ -138,11 +137,15 @@ def test_iterator():
 if __name__ == '__main__':
     test_cooldown()
     test_call_is_v()
-    test_no_repeat()
-    test_repeat()
-    test_bounce()
+    test_repeat_enum()
+    test_repeat_no()
+    test_repeat_loop()
+    test_repeat_bounce()
+    test_loops()
     test_easing()
     test_finished()
+    test_operators()
     test_descriptor()
+    test_reset()
     test_iterable()
     test_iterator()
