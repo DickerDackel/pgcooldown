@@ -1,3 +1,8 @@
+# v0.3.13
+- Python 3.14 added
+- LerpThing is an iterator now
+- Cosmetic doc and pep8 cleanups
+
 # v0.3.12
 
 - Give LerpThing its own reset()
