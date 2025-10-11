@@ -126,11 +126,9 @@ def test_iterable():
 
 def test_iterator():
     for i, lt in zip(range(99), LerpThing(0, 1, 1)):
-        print(f'{i=}  {lt=}')
         assert approx(lt, abs=0.01) == i / 10, f'{lt} vs {i / 10} ({i})'
         sleep(0.1)
 
-    print(f'OUTSIDE: {i=}  {lt=}')
     assert lt == 1, f'{lt} vs {i / 10} ({i})'
 
 
