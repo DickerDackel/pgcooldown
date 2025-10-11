@@ -87,13 +87,13 @@ class LerpThing:
 
     An optional easing function can be put on top of `t`.
 
-    Parameters
+    Parameters/Attributes
     ----------
-    vt0,
-    vt1: [int | float]
+    LerpThing.vt0,
+    LerpThing.vt1: [int | float]
         The endpoints of the lerp at `t == 0` and `t == 1`
 
-    duration: Cooldown
+    LerpThing.duration: Cooldown
         The length of the lerp.  This duration is mapped onto the range 0 - 1
         as `t`.
 
@@ -190,7 +190,7 @@ class LerpThing:
         return ((cold and not self.repeat)
                 or (cold and self.repeat and not self.loops))
 
-    def reset(self, duration: float  | None = None, repeat: LTRepeat | int | None = None, loops: int | None = None) -> None:
+    def reset(self, duration: float | None = None, repeat: LTRepeat | int | None = None, loops: int | None = None) -> None:
         """Reset the LerpThing.
 
         Calling it without arguments just resets the timer and loop counter.
