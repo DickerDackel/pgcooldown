@@ -258,7 +258,13 @@ lerps between these values.
 Once the time runs out, the lerp can stop, repeat from start or bounce
 back and forth.
 
+Note: if the lerp does not repeat, in contrast to e.g. python's `range`
+function, LerpThing will not stop short of the final value, but will include
+it once the time has run out.
+
 An optional easing function can be put on top of `t`.
+
+LerpThing is both iterable and an iterator.
 
 #### Parameters
 
