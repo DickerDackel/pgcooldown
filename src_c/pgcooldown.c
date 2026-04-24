@@ -426,6 +426,8 @@ static int cooldown___init__(Cooldown *self, PyObject *args, PyObject *kwargs) {
 	self->remaining_ = source->remaining_;
     } else {
 	self->duration = PyFloat_AsDouble(duration_or_cooldown);
+        self->t0.tv_sec = 0;
+        self->t0.tv_nsec = 0;
 
 	/* Do this first, since otherwise the timer is already running */
 	if (paused) set_paused(self, 1);
