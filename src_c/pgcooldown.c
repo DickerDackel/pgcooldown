@@ -295,6 +295,7 @@ static void set_cold(Cooldown *self, int val) {
 
 static void set_paused(Cooldown *self, int val) {
     if (val) {
+        // Order is important!
 	self->remaining_ = get_temperature(self);
 	self->paused = 1;
     } else {
