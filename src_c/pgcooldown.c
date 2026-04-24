@@ -45,7 +45,6 @@ static double remap(double a0, double a1, double b0, double b1, double v);
 static double timespec_to_double(struct timespec *t);
 static void double_to_timespec(struct timespec *t, double val);
 static double diff_timespec(struct timespec *t0, struct timespec *t1);
-static void substract_timespec(struct timespec *t0, struct timespec *t1);
 static double current_delta(struct timespec *t0);
 
 static double get_temperature(Cooldown *self);
@@ -235,12 +234,6 @@ static void double_to_timespec(struct timespec *t, double val) {
 
 static double diff_timespec(struct timespec *t0, struct timespec *t1) {
     return t1->tv_sec - t0->tv_sec + (t1->tv_nsec - t0->tv_nsec) / T_FRACTION_SCALE;
-}
-
-
-static void substract_timespec(struct timespec *t0, struct timespec *t1) {
-    t0->tv_sec -= t1->tv_sec;
-    t0->tv_nsec -= t1->tv_nsec;
 }
 
 
