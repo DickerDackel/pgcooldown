@@ -318,36 +318,67 @@ static void set_paused(Cooldown *self, int val) {
 static PyObject *pgcooldown_lerp(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
     double a, b, t;
 
-    if (nargs != 3)
-	return NULL;
+    if (nargs != 3) goto TYPE_ERROR;
 
     a = PyFloat_AsDouble(args[0]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
     b = PyFloat_AsDouble(args[1]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
     t = PyFloat_AsDouble(args[2]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
 
     return PyFloat_FromDouble(lerp(a, b, t));
+
+TYPE_ERROR:
+    PyErr_SetString(PyExc_TypeError, "lerp expects 3 floats");
+    return NULL;
 }
 
 static PyObject *pgcooldown_invlerp(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
     double a, b, v;
 
+    if (nargs != 3) goto TYPE_ERROR;
+
     a = PyFloat_AsDouble(args[0]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
     b = PyFloat_AsDouble(args[1]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
     v = PyFloat_AsDouble(args[2]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
+
+    if (b - a == 0) {
+        PyErr_SetString(PyExc_ValueError, "invlerp expects `a` and `b` to differ");
+        return NULL;
+    }
 
     return PyFloat_FromDouble(invlerp(a, b, v));
+
+TYPE_ERROR:
+    PyErr_SetString(PyExc_TypeError, "invlerp expects 3 floats");
+    return NULL;
 }
 
 static PyObject *pgcooldown_remap(PyObject *self, PyObject *const *args, Py_ssize_t nargs) {
     double a0, a1, b0, b1, v;
 
+    if (nargs != 5) goto TYPE_ERROR;
+
     a0 = PyFloat_AsDouble(args[0]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
     a1 = PyFloat_AsDouble(args[1]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
     b0 = PyFloat_AsDouble(args[2]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
     b1 = PyFloat_AsDouble(args[3]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
     v = PyFloat_AsDouble(args[4]);
+    if (PyErr_Occurred()) goto TYPE_ERROR;
 
     return PyFloat_FromDouble(remap(a0, a1, b0, b1, v));
+
+TYPE_ERROR:
+    PyErr_SetString(PyExc_TypeError, "remap expects 5 floats");
+    return NULL;
 }
 
 /*----------------------------------------------------------------------
@@ -476,6 +507,10 @@ static PyObject * cooldown_richcompare(PyObject *o1, PyObject *o2, int op) {
 	temperature = get_temperature((Cooldown *)o2);
 	other = PyFloat_AsDouble(PyNumber_Float(o1));
     }
+    if (PyErr_Occurred()) {
+        PyErr_SetString(PyExc_TypeError, "Operand cannot be converted to float");
+        return NULL;
+    }
 
     switch(op) {
 	case Py_LT:
@@ -597,7 +632,7 @@ static PyObject * cooldown_set_to(Cooldown *self, PyObject *const *args, Py_ssiz
 	return NULL;
     }
 
-    set_temperature(self, PyFloat_AsDouble(args[0]));
+    set_temperature(self, new);
 
     Py_RETURN_NONE;
 }
@@ -625,8 +660,13 @@ static PyObject * cooldown_getter_duration(Cooldown *self, void *closure) {
 
 
 static int cooldown_setter_duration(Cooldown *self, PyObject *val, void *closure) {
-    self->duration = PyFloat_AsDouble(val);
+    double duration = PyFloat_AsDouble(val);
+    if (PyErr_Occurred()) {
+        PyErr_SetString(PyExc_TypeError, "duration must be a float");
+        return -1;
+    }
 
+    self->duration = duration;
     return 0;
 }
 
@@ -640,7 +680,14 @@ static PyObject * cooldown_getter_wrap(Cooldown *self, void *closure) {
 
 
 static int cooldown_setter_wrap(Cooldown *self, PyObject *val, void *closure) {
-    self->wrap = PyObject_IsTrue(val);
+    int wrap = PyObject_IsTrue(val);
+
+    if (wrap < 0) {
+        PyErr_SetString(PyExc_TypeError, "paused must be a boolean");
+        return -1;
+    }
+
+    self->wrap = wrap;
 
     return 0;
 }
@@ -655,7 +702,14 @@ static PyObject * cooldown_getter_paused(Cooldown *self, void *closure) {
 
 
 static int cooldown_setter_paused(Cooldown *self, PyObject *val, void *closure) {
-    set_paused(self, self->paused = PyObject_IsTrue(val));
+    int paused = PyObject_IsTrue(val);
+
+    if (paused < 0) {
+        PyErr_SetString(PyExc_TypeError, "paused must be a boolean");
+        return -1;
+    }
+
+    set_paused(self, paused);
 
     return 0;
 }
@@ -667,7 +721,14 @@ static PyObject * cooldown_getter_temperature(Cooldown *self, void *closure) {
 
 
 static int cooldown_setter_temperature(Cooldown *self, PyObject *val, void *closure) {
-    set_temperature(self, PyFloat_AsDouble(val));
+    double temperature = PyFloat_AsDouble(val);
+
+    if (PyErr_Occurred()) {
+        PyErr_SetString(PyExc_TypeError, "temperature must be a float");
+        return -1;
+    }
+
+    set_temperature(self, temperature);
 
     return 0;
 }
@@ -693,7 +754,14 @@ static PyObject *cooldown_getter_normalized(Cooldown *self) {
 
 
 static int cooldown_setter_normalized(Cooldown *self, PyObject *val, void *closure) {
-    set_temperature(self, self->duration * PyFloat_AsDouble(val));
+    double normalized = PyFloat_AsDouble(val);
+
+    if (PyErr_Occurred()) {
+        PyErr_SetString(PyExc_TypeError, "normalized must be a float");
+        return -1;
+    }
+
+    set_temperature(self, self->duration * normalized);
 
     return 0;
 }
