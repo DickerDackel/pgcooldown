@@ -9,7 +9,7 @@
     | | | |/ _ \ / __/ __| __| '__| | '_ \ / _` / __|
     | |_| | (_) | (__\__ \ |_| |  | | | | | (_| \__ \
     |____/ \___/ \___|___/\__|_|  |_|_| |_|\__, |___/
-					   |___/
+                                           |___/
 ----------------------------------------------------------------------*/
 
 #include <docstrings.h>
@@ -108,7 +108,7 @@ PyMODINIT_FUNC PyInit__pgcooldown(void);
     | '_ \| | '_ \ / _` | | '_ \ / _` / __|
     | |_) | | | | | (_| | | | | | (_| \__ \
     |_.__/|_|_| |_|\__,_|_|_| |_|\__, |___/
-				 |___/
+                                 |___/
 ----------------------------------------------------------------------*/
 
 
@@ -186,7 +186,7 @@ static PyModuleDef cooldown_module = {
 
 
 /*----------------------------------------------------------------------
-	   _   _ _ _ _   _
+           _   _ _ _ _   _
      _   _| |_(_) (_) |_(_) ___  ___
     | | | | __| | | | __| |/ _ \/ __|
     | |_| | |_| | | | |_| |  __/\__ \
@@ -248,8 +248,8 @@ static double current_delta(struct timespec *t0) {
 
 static double get_temperature(Cooldown *self) {
     return self->paused
-	? self->remaining_
-	: self->duration - current_delta(&self->t0);
+        ? self->remaining_
+        : self->duration - current_delta(&self->t0);
 }
 
 
@@ -257,13 +257,13 @@ static void set_temperature(Cooldown *self, double val) {
     struct timespec now, delta;
 
     if (self->paused) {
-	self->remaining_ = val;
+        self->remaining_ = val;
     } else {
-	timespec_get(&now, TIME_UTC);
-	double_to_timespec(&delta, self->duration - val);
+        timespec_get(&now, TIME_UTC);
+        double_to_timespec(&delta, self->duration - val);
 
-	self->t0.tv_sec = now.tv_sec - delta.tv_sec;
-	self->t0.tv_nsec = now.tv_nsec - delta.tv_nsec;
+        self->t0.tv_sec = now.tv_sec - delta.tv_sec;
+        self->t0.tv_nsec = now.tv_nsec - delta.tv_nsec;
     }
 }
 
@@ -286,9 +286,9 @@ static int is_cold(Cooldown *self) {
 
 static void set_cold(Cooldown *self, int val) {
     if (val) {
-	set_temperature(self, 0.0);
+        set_temperature(self, 0.0);
     } else {
-	set_temperature(self, self->duration);
+        set_temperature(self, self->duration);
     }
 }
 
@@ -296,12 +296,12 @@ static void set_cold(Cooldown *self, int val) {
 static void set_paused(Cooldown *self, int val) {
     if (val) {
         // Order is important!
-	self->remaining_ = get_temperature(self);
-	self->paused = 1;
+        self->remaining_ = get_temperature(self);
+        self->paused = 1;
     } else {
-	self->paused = 0;
-	set_temperature(self, self->remaining_);
-	self->remaining_ = 0.0;
+        self->paused = 0;
+        set_temperature(self, self->remaining_);
+        self->remaining_ = 0.0;
     }
 }
 
@@ -382,7 +382,7 @@ TYPE_ERROR:
 }
 
 /*----------------------------------------------------------------------
-	  _                     _       __
+          _                     _       __
       ___| | __ _ ___ ___    __| | ___ / _|
      / __| |/ _` / __/ __|  / _` |/ _ \ |_
     | (__| | (_| \__ \__ \ | (_| |  __/  _|
@@ -396,7 +396,7 @@ static PyObject * cooldown_new(PyTypeObject *type, PyObject *args, PyObject *kwa
 
     self = (Cooldown *)type ->tp_alloc(type, 0);
     if (self != NULL) {
-	/* Alloc members here if appropriate */
+        /* Alloc members here if appropriate */
     }
 
     return (PyObject *)self;
@@ -411,28 +411,28 @@ static int cooldown___init__(Cooldown *self, PyObject *args, PyObject *kwargs) {
     Cooldown *source;
 
     if (!PyArg_ParseTupleAndKeywords(
-		args, kwargs, "O|$ppp", kwargslist,
-		&duration_or_cooldown, &self->wrap, &cold, &paused))
-	return -1;
+                args, kwargs, "O|$ppp", kwargslist,
+                &duration_or_cooldown, &self->wrap, &cold, &paused))
+        return -1;
 
     if (is_cooldown(duration_or_cooldown)) {
-	source = (Cooldown *)duration_or_cooldown;
+        source = (Cooldown *)duration_or_cooldown;
 
-	self->t0.tv_sec = source->t0.tv_sec;
-	self->t0.tv_nsec = source->t0.tv_nsec;
-	self->duration = source->duration;
-	self->wrap = source->wrap;
-	self->paused = source->paused;
-	self->remaining_ = source->remaining_;
+        self->t0.tv_sec = source->t0.tv_sec;
+        self->t0.tv_nsec = source->t0.tv_nsec;
+        self->duration = source->duration;
+        self->wrap = source->wrap;
+        self->paused = source->paused;
+        self->remaining_ = source->remaining_;
     } else {
-	self->duration = PyFloat_AsDouble(duration_or_cooldown);
+        self->duration = PyFloat_AsDouble(duration_or_cooldown);
         self->t0.tv_sec = 0;
         self->t0.tv_nsec = 0;
 
-	/* Do this first, since otherwise the timer is already running */
-	if (paused) set_paused(self, 1);
-	set_temperature(self, self->duration);
-	if (cold) set_cold(self, 1);
+        /* Do this first, since otherwise the timer is already running */
+        if (paused) set_paused(self, 1);
+        set_temperature(self, self->duration);
+        if (cold) set_cold(self, 1);
     }
 
     return 0;
@@ -457,11 +457,11 @@ static PyObject * cooldown_repr(Cooldown *self) {
     int cold = 0; /* FIXME */
 
     return PyUnicode_FromFormat(
-	    "Cooldown(%S, wrap=%S, paused=%S) at %p",
-	    PyFloat_FromDouble(self->duration),
-	    self->wrap ? Py_True : Py_False,
-	    self->paused ? Py_True : Py_False,
-	    self);
+            "Cooldown(%S, wrap=%S, paused=%S) at %p",
+            PyFloat_FromDouble(self->duration),
+            self->wrap ? Py_True : Py_False,
+            self->paused ? Py_True : Py_False,
+            self);
 }
 
 
@@ -495,19 +495,19 @@ static PyObject * cooldown___next__(Cooldown *self) {
 }
 
 #define VAL_OF(o) (is_cooldown(o) \
-	? get_temperature((Cooldown *)o) \
-	: PyFloat_AsDouble(o))
+        ? get_temperature((Cooldown *)o) \
+        : PyFloat_AsDouble(o))
 
 static PyObject * cooldown_richcompare(PyObject *o1, PyObject *o2, int op) {
     double temperature;
     double other;
 
     if (is_cooldown(o1)) {
-	temperature = get_temperature((Cooldown *)o1);
-	other = PyFloat_AsDouble(PyNumber_Float(o2));
+        temperature = get_temperature((Cooldown *)o1);
+        other = PyFloat_AsDouble(PyNumber_Float(o2));
     } else {
-	temperature = get_temperature((Cooldown *)o2);
-	other = PyFloat_AsDouble(PyNumber_Float(o1));
+        temperature = get_temperature((Cooldown *)o2);
+        other = PyFloat_AsDouble(PyNumber_Float(o1));
     }
     if (PyErr_Occurred()) {
         PyErr_SetString(PyExc_TypeError, "Operand cannot be converted to float");
@@ -515,27 +515,27 @@ static PyObject * cooldown_richcompare(PyObject *o1, PyObject *o2, int op) {
     }
 
     switch(op) {
-	case Py_LT:
-	    return PyBool_FromLong(temperature < other);
-	    break;
-	case Py_LE:
-	    return PyBool_FromLong(temperature <= other);
-	    break;
-	case Py_EQ:
-	    return PyBool_FromLong(temperature == other);
-	    break;
-	case Py_NE:
-	    return PyBool_FromLong(temperature != other);
-	    break;
-	case Py_GT:
-	    return PyBool_FromLong(temperature > other);
-	    break;
-	case Py_GE:
-	    return PyBool_FromLong(temperature >= other);
-	    break;
-	default:
-	    PyErr_SetString(PyExc_ValueError, "Can't convert object to number");
-	    return NULL;
+        case Py_LT:
+            return PyBool_FromLong(temperature < other);
+            break;
+        case Py_LE:
+            return PyBool_FromLong(temperature <= other);
+            break;
+        case Py_EQ:
+            return PyBool_FromLong(temperature == other);
+            break;
+        case Py_NE:
+            return PyBool_FromLong(temperature != other);
+            break;
+        case Py_GT:
+            return PyBool_FromLong(temperature > other);
+            break;
+        case Py_GE:
+            return PyBool_FromLong(temperature >= other);
+            break;
+        default:
+            PyErr_SetString(PyExc_ValueError, "Can't convert object to number");
+            return NULL;
     }
 
 }
@@ -552,17 +552,17 @@ static PyObject * cooldown_richcompare(PyObject *o1, PyObject *o2, int op) {
 
 static PyObject * cooldown_cold(Cooldown *self) {
     if (is_cold(self))
-	Py_RETURN_TRUE;
+        Py_RETURN_TRUE;
     else
-	Py_RETURN_FALSE;
+        Py_RETURN_FALSE;
 }
 
 
 static PyObject * cooldown_hot(Cooldown *self) {
     if (is_cold(self))
-	Py_RETURN_FALSE;
+        Py_RETURN_FALSE;
     else
-	Py_RETURN_TRUE;
+        Py_RETURN_TRUE;
 }
 
 
@@ -578,18 +578,18 @@ static PyObject * cooldown_reset(Cooldown *self, PyObject *args, PyObject *kwarg
     static char *kwargslist[] = {"", "wrap", NULL};
 
     if (!PyArg_ParseTupleAndKeywords(
-		args, kwargs, "|d$p", kwargslist,
-		&new_duration, &wrap))
-	return NULL;
+                args, kwargs, "|d$p", kwargslist,
+                &new_duration, &wrap))
+        return NULL;
 
     if (!wrap) {
-	new_temperature = new_duration;
+        new_temperature = new_duration;
     } else {
-	old_temperature = get_temperature(self);
+        old_temperature = get_temperature(self);
 
-	new_temperature = old_temperature > 0
-	    ? new_duration
-	    : fmod(old_temperature, new_duration) + new_duration;
+        new_temperature = old_temperature > 0
+            ? new_duration
+            : fmod(old_temperature, new_duration) + new_duration;
     }
 
     /* Only now overwrite! */
@@ -618,20 +618,20 @@ static PyObject * cooldown_start(Cooldown *self) {
 
 static PyObject * cooldown_is_paused(Cooldown *self) {
     if (self->paused)
-	Py_RETURN_TRUE;
+        Py_RETURN_TRUE;
     else
-	Py_RETURN_FALSE;
+        Py_RETURN_FALSE;
 }
 
 
 static PyObject * cooldown_set_to(Cooldown *self, PyObject *const *args, Py_ssize_t nargs) {
     if (nargs != 1)
-	return NULL;
+        return NULL;
 
     double new = PyFloat_AsDouble(args[0]);
     if (new > self->duration) {
-	PyErr_SetString(PyExc_ValueError, "value larger than duration, use reset() instead.");
-	return NULL;
+        PyErr_SetString(PyExc_ValueError, "value larger than duration, use reset() instead.");
+        return NULL;
     }
 
     set_temperature(self, new);
@@ -648,7 +648,7 @@ static PyObject * cooldown_set_cold(Cooldown *self) {
 
 
 /*----------------------------------------------------------------------
-	   _   _        _ _           _
+           _   _        _ _           _
       __ _| |_| |_ _ __(_) |__  _   _| |_ ___  ___
      / _` | __| __| '__| | '_ \| | | | __/ _ \/ __|
     | (_| | |_| |_| |  | | |_) | |_| | ||  __/\__ \
@@ -675,9 +675,9 @@ static int cooldown_setter_duration(Cooldown *self, PyObject *val, void *closure
 
 static PyObject * cooldown_getter_wrap(Cooldown *self, void *closure) {
     if (self->wrap)
-	Py_RETURN_TRUE;
+        Py_RETURN_TRUE;
     else
-	Py_RETURN_FALSE;
+        Py_RETURN_FALSE;
 }
 
 
@@ -697,9 +697,9 @@ static int cooldown_setter_wrap(Cooldown *self, PyObject *val, void *closure) {
 
 static PyObject * cooldown_getter_paused(Cooldown *self, void *closure) {
     if (self->paused)
-	Py_RETURN_TRUE;
+        Py_RETURN_TRUE;
     else
-	Py_RETURN_FALSE;
+        Py_RETURN_FALSE;
 }
 
 
@@ -750,8 +750,8 @@ static int cooldown_setter_remaining(Cooldown *self, PyObject *val, void *closur
 
 static PyObject *cooldown_getter_normalized(Cooldown *self) {
     return self->duration
-	? PyFloat_FromDouble(1 - get_remaining(self) / self->duration)
-	: PyFloat_FromDouble(0.0);
+        ? PyFloat_FromDouble(1 - get_remaining(self) / self->duration)
+        : PyFloat_FromDouble(0.0);
 }
 
 
@@ -770,7 +770,7 @@ static int cooldown_setter_normalized(Cooldown *self, PyObject *val, void *closu
 
 
 /*----------------------------------------------------------------------
-			 _       _
+                         _       _
      _ __ ___   ___   __| |_   _| | ___
     | '_ ` _ \ / _ \ / _` | | | | |/ _ \
     | | | | | | (_) | (_| | |_| | |  __/
@@ -782,15 +782,15 @@ PyMODINIT_FUNC PyInit__pgcooldown(void) {
     PyObject *m;
 
     if (PyType_Ready(&cooldown_type) < 0)
-	return NULL;
+        return NULL;
 
     m = PyModule_Create(&cooldown_module);
     if (m == NULL)
-	return NULL;
+        return NULL;
 
     if (PyModule_AddObjectRef(m, "Cooldown", (PyObject *)&cooldown_type) < 0) {
-	Py_DECREF(m);
-	return NULL;
+        Py_DECREF(m);
+        return NULL;
     }
 
     return m;
