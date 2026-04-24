@@ -1,3 +1,12 @@
+# v0.3.14
+- refactoring, whitespace changes, unused code removal
+- Uninitialized memory could result in wrong remaining time when instantiating
+  with `paused=True`
+- Lots of python error checking added
+- Some more tests
+- docstring fixes
+
+
 # v0.3.13
 - Python 3.14 added
 - LerpThing is an iterator now
