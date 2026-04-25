@@ -12,6 +12,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+      - name: Setup
+        run: python -m pip install uv
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v3.4.1
