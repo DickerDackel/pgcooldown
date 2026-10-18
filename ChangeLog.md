@@ -1,3 +1,7 @@
+# v0.3.15
+
+- No changes, but pypi requires me to create a new release to support 3.15 wheels
+
 # v0.3.14
 - refactoring, whitespace changes, unused code removal
 - Uninitialized memory could result in wrong remaining time when instantiating
@@ -154,3 +158,4 @@ design decision needed to be fixed if any more people would use this.
 - Merge branch 'main' of https://github.com/dickerdackel/pgcooldown
 - Add Install section
 - Update README.md
+
